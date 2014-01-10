@@ -6,8 +6,8 @@ import re
 from SimpleCV import *
 
 cam = Camera()
-avgX = [0] * 10000
-avgY = [0] * 10000
+avgX = [0] * 100
+avgY = [0] * 100
 ind  = 0
 while True:
 	sumX = 0
@@ -17,8 +17,7 @@ while True:
 	blobs = img.findBlobs()
 	for b in range(len(blobs)-1):
 		squares = img.findBlobs()
-		if (blobs[b].isSquare(tolerance=0.05,ratiotolerance=0.5)):
-			#blobs[b] = blobs[b] - blobs[b].getEdgeImage()
+		if (blobs[b].isSquare(tolerance=0.09,ratiotolerance=0.9)):
 			blobs[b].draw(color=Color.YELLOW)
 			blobs[b].drawOutline(color=Color.RED,width=3,alpha=128)
 			if (blobs[b].minRectX() != 0 and blobs[b].minRectY() != 0):
@@ -44,7 +43,7 @@ while True:
 	else:
 		ind += 1
 	
-	img.drawText(('X:   ' + str(round(sumX / 10000)) + '   Y: ' + str(round(sumY / 10000))),fontsize=40)
+	img.drawText(('X:   ' + str(round(sumX / 100)) + '   Y: ' + str(round(sumY / 100))),fontsize=40)
 	img.show()
 
 
