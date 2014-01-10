@@ -11,6 +11,7 @@ myPort = 2000
 s = socket(AF_INET, SOCK_STREAM)
 s.bind((myHost, myPort))
 s.listen(5)
+i = 0
 while True:
 	img = cam.getImage()
 	blobs = img.findBlobs()
@@ -19,7 +20,10 @@ while True:
 	test.draw(color=Color.RED,width=4)
 	img.drawText(str(test.coordinates()))
 	img.show()
-	
-	connection, address = s.accept()
-	connection.send('tits')
+	if i < 10:
+		pass
+	else:
+		connection, address = s.accept()
+		connection.send(test)
+		i = 0
 	
