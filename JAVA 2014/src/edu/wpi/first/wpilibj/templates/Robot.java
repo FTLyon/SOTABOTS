@@ -24,27 +24,25 @@ import javax.microedition.io.SocketConnection;
  * creating this project, you must also update the manifest file in the resource
  * directory.
  */
-public class RobotTemplate extends IterativeRobot {
+public class Robot extends IterativeRobot {
     RobotDrive drive;
     DigitalInput pi_X;
     DigitalInput pi_Y;
     DigitalOutput out;
     double x_accel_0;
     double y_accel_0;
+    double X, Y; //translations from Pi
+    double[] xy;
     
-    static double x_target;
-    static double y_target;
-    static double tolerance_x;
-    static double tolerance_y;
     
-    static double motor_x;
-    static double motor_y;
+    public static double motor_x;
+    public static double motor_y;
     
     public void robotInit() {
         drive   = new RobotDrive(Map.leftDriveMotor, Map.rightDriveMotor);
         pi_X    = new DigitalInput(Map.piInput_X);
         pi_Y    = new DigitalInput(Map.piInput_Y);
-        
+        xy = Vision.average(X, Y);
        
     }
 
@@ -52,6 +50,7 @@ public class RobotTemplate extends IterativeRobot {
      * This function is called periodically during autonomous
      */
     public void autonomousPeriodic() {
+        
     }
 
     /**
@@ -75,32 +74,4 @@ public class RobotTemplate extends IterativeRobot {
     public void testPeriodic() {
     
     }
-    
-    public void target(double[] coor) {
-        double x = coor[0];
-        double y = coor[1];
-        
-        //if target is on LEFT SIDE and outside tolerance
-        while (x < x_target - tolerance_x) {
-            motor_x = .1 * (x_target - x);
-        }
-        
-        //if target is on RIGHT SIDE and outside tolerance
-        while (x > x_target + tolerance_x) {
-            motor_x = .1 * (x - x_target);
-        }
-        
-        //if target is ABOVE and outside tolerance (INVERT Y-COORDINATE FIRST!!!)
-        while (y < y_target - tolerance_y) {
-            motor_y = .1 * (y_target - y);
-        }
-        
-        //if target is BELOW and outside tolerance 
-        while (y > y_target + tolerance_y) {
-            motor_y = .1 * (y - y_target);
-        }
-        
-        
-    }
-    
 }

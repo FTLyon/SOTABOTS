@@ -1,6 +1,7 @@
 package edu.wpi.first.wpilibj.templates;
 
 import edu.wpi.first.wpilibj.Timer;
+import edu.wpi.first.wpilibj.templates.Robot.*;
 
 /**
  *
@@ -12,6 +13,11 @@ public class Vision {
     static double[] arrayX = new double[200];
     static double[] arrayY = new double[200];
     static int index = 0;
+    
+    public static double x_target;
+    public static double y_target;
+    public static double tolerance_x;
+    public static double tolerance_y;
     
     public static double[] average (double inputX, double inputY) {
         if (index < arrayX.length - 1) {
@@ -43,11 +49,37 @@ public class Vision {
             //Pass
         }
         else if (c1 != null) {
-            //Target
+            target(c1);
         }
         
         return leftRight;
     }
     
+    public static void target(double[] coor) {
+        double x = coor[0];
+        double y = coor[1];
+        
+        //if target is on LEFT SIDE and outside tolerance
+        while (x < x_target - tolerance_x) {
+            Robot.motor_x = .1 * (x_target - x);
+        }
+        
+        //if target is on RIGHT SIDE and outside tolerance
+        while (x > x_target + tolerance_x) {
+            Robot.motor_x = .1 * (x - x_target);
+        }
+        
+        //if target is ABOVE and outside tolerance (INVERT Y-COORDINATE FIRST!!!)
+        while (y < y_target - tolerance_y) {
+            Robot.motor_y = .1 * (y_target - y);
+        }
+        
+        //if target is BELOW and outside tolerance 
+        while (y > y_target + tolerance_y) {
+            Robot.motor_y = .1 * (y - y_target);
+        }
+        
+        
+    }
     
 }
