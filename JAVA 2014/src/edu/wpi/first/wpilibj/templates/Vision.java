@@ -2,7 +2,7 @@ package edu.wpi.first.wpilibj.templates;
 
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.templates.Robot.*;
-
+import java.util.*;
 /**
  *
  * @author Frankie Lyon
@@ -18,6 +18,49 @@ public class Vision {
     public static double y_target;
     public static double tolerance_x;
     public static double tolerance_y;
+    
+    public static double[][] gather (String in) {
+        //Input looks like this: [[x y][x y]]
+        String temp1 = in.replace('[', ' ');
+        // x y] x y]]
+        String temp2 = temp1.replace(']', ' ');
+        // x y  x y  
+        String[] list1 = Split(temp2, "  ");
+        // list1 = [x y][x y]
+        String temp3 = null; //x y
+        String temp4 = null;
+        
+        String[] list3;
+        String[] list4;
+        if (list1[0] != null)
+            temp3 = list1[0];
+            list3 = Split(temp4, " ");
+        if (list1[1] != null)
+            temp4 = list1[1]; //x y
+            list4 = Split(temp4, " ");
+            
+        //We now have: list3 = {x,y} list4 = {x,y}
+        double[] coor1 = null;
+        double[] coor2 = null;
+        
+        for (int i = 0; i < list3.length; i++) {
+            if (list3 != null)
+                coor1[i] = Double.parseDouble(list3[i]);
+            if (list4 != null)
+            coor2[i] = Double.parseDouble(list4[i]);
+        }
+        // coor1 = [x1,y1]
+        // coor2 = [x2,y2]
+        
+        
+        
+        double coor[][] = null; //Two-dimensional array for: [0][0] = x1, [0][1] = y1, [1][0] = x2, [1][1] = y2
+        coor[0][0] = coor1[0]; //x1
+        coor[0][1] = coor1[1]; //y1
+        coor[1][0] = coor2[0]; //x2
+        coor[1][1] = coor2[1]; //y2
+        return coor;
+    }
     
     public static double[] average (double inputX, double inputY) {
         if (index < arrayX.length - 1) {
@@ -81,5 +124,32 @@ public class Vision {
         
         
     }
+    public static String[] Split(String splitStr, String delimiter) {  
+    StringBuffer token = new StringBuffer();  
+    Vector tokens = new Vector();  
+    // split  
+    char[] chars = splitStr.toCharArray();  
+    for (int i=0; i < chars.length; i++) {  
+        if (delimiter.indexOf(chars[i]) != -1) {  
+            // we bumbed into a delimiter  
+            if (token.length() > 0) {  
+                tokens.addElement(token.toString());  
+                token.setLength(0);  
+            }  
+        } else {  
+            token.append(chars[i]);  
+        }  
+    }  
+    // don't forget the "tail"...  
+    if (token.length() > 0) {  
+        tokens.addElement(token.toString());  
+    }  
+    // convert the vector into an array  
+    String[] splitArray = new String[tokens.size()];  
+    for (int i=0; i < splitArray.length; i++) {  
+        splitArray[i] = (String) tokens.elementAt(i);  
+    }  
+    return splitArray;  
+}  
     
 }
