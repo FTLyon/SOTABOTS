@@ -8,10 +8,12 @@
 package edu.wpi.first.wpilibj.templates;
 
 
+import edu.wpi.first.wpilibj.AnalogChannel;
 import edu.wpi.first.wpilibj.IterativeRobot;
 import edu.wpi.first.wpilibj.RobotDrive;
 import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj.DigitalOutput;
+import edu.wpi.first.wpilibj.Timer;
 import java.io.IOException;
 import java.io.InputStream;
 import javax.microedition.io.Connector;
@@ -26,9 +28,8 @@ import javax.microedition.io.SocketConnection;
  */
 public class Robot extends IterativeRobot {
     RobotDrive drive;
-    DigitalInput pi_X;
-    DigitalInput pi_Y;
-    DigitalOutput out;
+    AnalogChannel ard_X;
+    AnalogChannel ard_Y;
     double x_accel_0;
     double y_accel_0;
     double X, Y; //translations from Pi
@@ -38,12 +39,16 @@ public class Robot extends IterativeRobot {
     public static double motor_x;
     public static double motor_y;
     
+    public static double lz_X;
+    public static double lz_Y;
+    public static double t;
+    Timer time;
+    
     public void robotInit() {
         drive   = new RobotDrive(Map.leftDriveMotor, Map.rightDriveMotor);
-        pi_X    = new DigitalInput(Map.piInput_X);
-        pi_Y    = new DigitalInput(Map.piInput_Y);
-        xy = Vision.average(X, Y);
-       
+        ard_X   = new AnalogChannel(Map.arduino_X);
+        ard_Y   = new AnalogChannel(Map.arduino_Y);
+        xy      = Vision.average(X, Y);
     }
 
     /**
@@ -57,6 +62,17 @@ public class Robot extends IterativeRobot {
      * This function is called periodically during operator control
      */
     public void teleopPeriodic() {
+        if (motor_x != 0 || motor_y != 0) {
+            time.start();
+        }
+        else if (Math.abs(motor_x) < .05 && Math.abs(motor_y) < .05) {
+            time.stop();
+            time.reset();
+            t = 0;
+        }
+        
+        t = time.get();
+        
         try {          
             SocketConnection sc = (SocketConnection)Connector.open("socket://GLOBAL-2012:10.25.57.6");
             sc.setSocketOption(SocketConnection.LINGER, 5);
@@ -67,6 +83,7 @@ public class Robot extends IterativeRobot {
             System.out.println("IAN's FAULT");
         }
     }
+    
     
     /**
      * This function is called periodically during test mode

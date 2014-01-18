@@ -12,6 +12,6 @@ public class Map {
     static int leftDriveMotor   =   1;
     static int rightDriveMotor  =   2;
     
-    static int piInput_X        =   1;
-    static int piInput_Y        =   2;
+    static int arduino_X        =   1;
+    static int arduino_Y        =   2;
 }
