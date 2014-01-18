@@ -4,11 +4,12 @@
  */
 package edu.wpi.first.wpilibj.templates;
 
+import com.sun.squawk.io.BufferedReader;
 import edu.wpi.first.wpilibj.Timer;
 import java.io.IOException;
 import java.io.InputStream;
-import javax.microedition.io.Connector;
-import javax.microedition.io.SocketConnection;
+import java.io.InputStreamReader;
+import java.lang.Byte;
 import javax.microedition.io.Connector;
 import javax.microedition.io.SocketConnection;
 
@@ -21,27 +22,24 @@ public class Network {
     public static void NetIn() {
         int i = 0;
         while(true) {
-            i++;
         try {
             //Network input from Raspberry pi
             SocketConnection sc = (SocketConnection)Connector.open("socket://10.25.57.6:111");
-            sc.setSocketOption(SocketConnection.LINGER, 5);
+            sc.setSocketOption(SocketConnection.LINGER, 1);
             InputStream is = sc.openInputStream();
-            //System.out.println(Byte.toString(is.read())); //replace this line with connection to Vision coordinate values (X, Y)
-            System.out.println(is.hashCode());
+            BufferedReader in = new BufferedReader(new InputStreamReader(is));
+            System.out.println(in.readLine());
             System.out.println("YEAH");
+            Timer.delay(.01);
             //Robot.X = 
             //Robot.Y = 
         } catch (IOException ex) {
-            ex.printStackTrace();
-            System.out.println("HITLER WAS AN OKAY GUY");
+            System.out.println("Recieve data failed.");
+            Timer.delay(.1);
         }
-        Timer.delay(1);
-        if (i > 1000) 
-            break;           
-            System.out.println("...............");
         
     }
     }
-            
 }
+            
+
