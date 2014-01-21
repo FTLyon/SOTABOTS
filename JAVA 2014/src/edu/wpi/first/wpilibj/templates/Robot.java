@@ -18,7 +18,7 @@ public class Robot extends IterativeRobot {
     RobotDrive drive;
     AnalogChannel ard_X; //analog inputs from arduino
     AnalogChannel ard_Y;
-    double X, Y; //translation (strings to doubles) from Pi (from vision class)
+    static double X, Y; //translation (strings to doubles) from Pi (from vision class)
     double[] xy; //Pi target coordinate values after moving average filter
     
     
@@ -35,6 +35,8 @@ public class Robot extends IterativeRobot {
         ard_X   = new AnalogChannel(Map.arduino_X);
         ard_Y   = new AnalogChannel(Map.arduino_Y);
         xy      = Vision.average(X, Y);
+        lz_X    = 0;
+        lz_Y    = 0;
         Network.NetIn();
     }
 
@@ -47,7 +49,11 @@ public class Robot extends IterativeRobot {
 
    
     public void teleopPeriodic() {
+        
         Network.NetIn();
+        xy = Accelerometer.average(ard_X.getValue(), ard_Y.getValue());
+        Accelerometer.localize(xy[0], xy[1]);
+        Vision.average(X, Y);
         
         //timer start/stop operations for localization calculations
         if (motor_x != 0 || motor_y != 0) 
@@ -56,9 +62,12 @@ public class Robot extends IterativeRobot {
             time.stop();
             time.reset();
             t = 0;
-        
         t = time.get();
         
+        
+        
+        System.out.println("Local coordinates:  " + lz_X + " " + lz_Y);
+        System.out.print("Vision coordinates:  " + X + " " + Y);
         
         
     }
