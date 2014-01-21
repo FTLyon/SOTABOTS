@@ -36,7 +36,6 @@ public class Accelerometer {
     }
     
     public static void localize (double accelX, double accelY) {
-        double coordinates[] = null;
         if (Robot.t != 0) {
             Robot.lz_X += accelX * .5 * Robot.t * Robot.t;
             Robot.lz_Y += accelY * .5 * Robot.t * Robot.t;
