@@ -11,7 +11,11 @@ package edu.wpi.first.wpilibj.templates;
 public class Map {
     static int leftDriveMotor   =   1;
     static int rightDriveMotor  =   2;
-    
+    static int intakeMotor      =   3;
+    static int winchMotor       =   4;
     static int arduino_X        =   1;
     static int arduino_Y        =   2;
+    static int limSwitchPort    =   3; 
+    static int kicker1          =   1;
+    static int kicker2          =   2;
 }

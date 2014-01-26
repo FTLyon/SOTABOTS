@@ -1,16 +1,12 @@
-/*----------------------------------------------------------------------------*/
-/* Copyright (c) FIRST 2008. All Rights Reserved.                             */
-/* Open Source Software - may be modified and shared by FRC teams. The code   */
-/* must be accompanied by the FIRST BSD license file in the root directory of */
-/* the project.                                                               */
-/*----------------------------------------------------------------------------*/
-
 package edu.wpi.first.wpilibj.templates;
 
 
 import edu.wpi.first.wpilibj.AnalogChannel;
+import edu.wpi.first.wpilibj.DigitalInput;
+import edu.wpi.first.wpilibj.DoubleSolenoid;
 import edu.wpi.first.wpilibj.IterativeRobot;
 import edu.wpi.first.wpilibj.RobotDrive;
+import edu.wpi.first.wpilibj.Talon;
 import edu.wpi.first.wpilibj.Timer;
 
 
@@ -18,10 +14,15 @@ public class Robot extends IterativeRobot {
     RobotDrive drive;
     AnalogChannel ard_X; //analog inputs from arduino
     AnalogChannel ard_Y;
+    Talon winch;
+    Talon intake;
+    DigitalInput limSwitch;
+    DoubleSolenoid kicker;
+    
+    
     static double X, Y; //translation (strings to doubles) from Pi (from vision class)
     double[] xy; //Pi target coordinate values after moving average filter
-    
-    
+       
     public static double motor_x; //motor x-value
     public static double motor_y; //motor y-value
     
@@ -34,15 +35,16 @@ public class Robot extends IterativeRobot {
         drive   = new RobotDrive(Map.leftDriveMotor, Map.rightDriveMotor);
         ard_X   = new AnalogChannel(Map.arduino_X);
         ard_Y   = new AnalogChannel(Map.arduino_Y);
+        winch   = new Talon(Map.winchMotor);
+        intake  = new Talon(Map.intakeMotor);
+        limSwitch=new DigitalInput(Map.limSwitchPort);
+        kicker  = new DoubleSolenoid(Map.kicker1, Map.kicker2);
         xy      = Vision.average(X, Y);
         lz_X    = 0;
         lz_Y    = 0;
         Network.NetIn();
     }
-
-    /**
-     * This function is called periodically during autonomous
-     */
+    
     public void autonomousPeriodic() {
         
     }
@@ -66,16 +68,12 @@ public class Robot extends IterativeRobot {
         
         
         
-        System.out.println("Local coordinates:  " + lz_X + " " + lz_Y);
+        System.out.println("Localized coordinates:  " + lz_X + " " + lz_Y);
         System.out.print("Vision coordinates:  " + X + " " + Y);
         
         
     }
     
-    
-    /**
-     * This function is called periodically during test mode
-     */
     public void testPeriodic() {
     
     }
