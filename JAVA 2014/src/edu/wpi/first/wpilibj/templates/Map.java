@@ -18,4 +18,8 @@ public class Map {
     static int limSwitchPort    =   3; 
     static int kicker1          =   1;
     static int kicker2          =   2;
+    static int leftEncoder_a    =   5;
+    static int leftEncoder_b    =   6;
+    static int rightEncoder_a   =   7;
+    static int rightEncoder_b   =   8;
 }

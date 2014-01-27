@@ -4,6 +4,7 @@ package edu.wpi.first.wpilibj.templates;
 import edu.wpi.first.wpilibj.AnalogChannel;
 import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj.DoubleSolenoid;
+import edu.wpi.first.wpilibj.Encoder;
 import edu.wpi.first.wpilibj.IterativeRobot;
 import edu.wpi.first.wpilibj.RobotDrive;
 import edu.wpi.first.wpilibj.Talon;
@@ -18,6 +19,8 @@ public class Robot extends IterativeRobot {
     Talon intake;
     DigitalInput limSwitch;
     DoubleSolenoid kicker;
+    Encoder     leftDrive;
+    Encoder     rightDrive;
     
     
     static double X, Y; //translation (strings to doubles) from Pi (from vision class)
@@ -32,16 +35,20 @@ public class Robot extends IterativeRobot {
     Timer time;
     
     public void robotInit() {
-        drive   = new RobotDrive(Map.leftDriveMotor, Map.rightDriveMotor);
-        ard_X   = new AnalogChannel(Map.arduino_X);
-        ard_Y   = new AnalogChannel(Map.arduino_Y);
-        winch   = new Talon(Map.winchMotor);
-        intake  = new Talon(Map.intakeMotor);
-        limSwitch=new DigitalInput(Map.limSwitchPort);
-        kicker  = new DoubleSolenoid(Map.kicker1, Map.kicker2);
+        drive       = new RobotDrive(Map.leftDriveMotor, Map.rightDriveMotor);
+        ard_X       = new AnalogChannel(Map.arduino_X);
+        ard_Y       = new AnalogChannel(Map.arduino_Y);
+        winch       = new Talon(Map.winchMotor);
+        intake      = new Talon(Map.intakeMotor);
+        limSwitch   = new DigitalInput(Map.limSwitchPort);
+        kicker      = new DoubleSolenoid(Map.kicker1, Map.kicker2);
+        leftDrive   = new Encoder(Map.leftEncoder_a, Map.leftEncoder_b);
+        rightDrive  = new Encoder(Map.rightEncoder_a, Map.rightEncoder_b);
+        
         xy      = Vision.average(X, Y);
         lz_X    = 0;
         lz_Y    = 0;
+        
         Network.NetIn();
     }
     
@@ -68,6 +75,7 @@ public class Robot extends IterativeRobot {
         
         
         
+        
         System.out.println("Localized coordinates:  " + lz_X + " " + lz_Y);
         System.out.print("Vision coordinates:  " + X + " " + Y);
         
@@ -75,6 +83,6 @@ public class Robot extends IterativeRobot {
     }
     
     public void testPeriodic() {
-    
+        //method used for testing of basic code, prototyping, etc.
     }
 }
