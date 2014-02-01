@@ -62,7 +62,7 @@ public class Robot extends IterativeRobot {
     }
 
    
-    public void teleopPeriodic() {
+    public void teleopPeriodic() { //DO NOT RUN THIS. IF I SEE YOU RUN THIS I WILL EAT YOUR FAMILY.
         
         Network.NetIn();
         xy = Accelerometer.average(ard_X.getValue(), ard_Y.getValue());
