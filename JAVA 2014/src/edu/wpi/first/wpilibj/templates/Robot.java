@@ -6,6 +6,7 @@ import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj.DoubleSolenoid;
 import edu.wpi.first.wpilibj.Encoder;
 import edu.wpi.first.wpilibj.IterativeRobot;
+import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj.RobotDrive;
 import edu.wpi.first.wpilibj.Talon;
 import edu.wpi.first.wpilibj.Timer;
@@ -21,6 +22,8 @@ public class Robot extends IterativeRobot {
     DoubleSolenoid kicker;
     Encoder     leftDrive;
     Encoder     rightDrive;
+    Joystick    leftStick;
+    Joystick    rightStick;
     
     
     static double X, Y; //translation (strings to doubles) from Pi (from vision class)
@@ -44,6 +47,8 @@ public class Robot extends IterativeRobot {
         kicker      = new DoubleSolenoid(Map.kicker1, Map.kicker2);
         leftDrive   = new Encoder(Map.leftEncoder_a, Map.leftEncoder_b);
         rightDrive  = new Encoder(Map.rightEncoder_a, Map.rightEncoder_b);
+        leftStick   = new Joystick(1);
+        rightStick  = new Joystick(2);
         
         xy      = Vision.average(X, Y);
         lz_X    = 0;
@@ -84,5 +89,40 @@ public class Robot extends IterativeRobot {
     
     public void testPeriodic() {
         //method used for testing of basic code, prototyping, etc.
+        drive.arcadeDrive(leftStick);
+        
+        //KICKER SOLENOID, TRIGGER ENABLE
+        if (leftStick.getTrigger()) {
+            kicker.set(DoubleSolenoid.Value.kForward);
+        }
+        else {
+            kicker.set(DoubleSolenoid.Value.kReverse);
+        }
+        
+        //INTAKE MOTOR SET TO 20% BY BUTTON 5, -20% BY BUTTON 6
+        if (leftStick.getRawButton(5)) {
+            intake.set(.2);
+        }
+        else if (leftStick.getRawButton(6)) {
+            intake.set(-.2);
+        }
+        else {
+            intake.set(0);
+        }
+        
+        //WINCH MOTOR SET TO 30% BY BUTTON 7, -30% BY BUTTON 8
+        if (leftStick.getRawButton(7)) {
+            winch.set(.3);
+        }
+        else if (leftStick.getRawButton(8)) {
+            winch.set(-.3);
+        }
+        else {
+            winch.set(0);
+        }
+        
+        
     }
 }
+
+
