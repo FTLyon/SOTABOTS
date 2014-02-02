@@ -89,6 +89,10 @@ public class Robot extends IterativeRobot {
     
     public void testPeriodic() {
         //method used for testing of basic code, prototyping, etc.
+        getWatchdog().setEnabled(true);
+        getWatchdog().setExpiration(0.1);
+        getWatchdog().feed();
+        
         drive.arcadeDrive(leftStick);
         
         //KICKER SOLENOID, TRIGGER ENABLE
