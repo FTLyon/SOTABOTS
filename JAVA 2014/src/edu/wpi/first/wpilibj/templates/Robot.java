@@ -1,132 +1,111 @@
 package edu.wpi.first.wpilibj.templates;
 
 
-import edu.wpi.first.wpilibj.AnalogChannel;
+import edu.wpi.first.wpilibj.Compressor;
 import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj.DoubleSolenoid;
-import edu.wpi.first.wpilibj.Encoder;
-import edu.wpi.first.wpilibj.IterativeRobot;
 import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj.RobotDrive;
+import edu.wpi.first.wpilibj.SimpleRobot;
+import edu.wpi.first.wpilibj.Solenoid;
 import edu.wpi.first.wpilibj.Talon;
 import edu.wpi.first.wpilibj.Timer;
 
 
-public class Robot extends IterativeRobot {
-    RobotDrive drive;
-    AnalogChannel ard_X; //analog inputs from arduino
-    AnalogChannel ard_Y;
-    Talon winch;
-    Talon intake;
-    DigitalInput limSwitch;
-    DoubleSolenoid kicker;
-    Encoder     leftDrive;
-    Encoder     rightDrive;
-    Joystick    leftStick;
-    Joystick    rightStick;
+public class Robot extends SimpleRobot {
+    Joystick   leftStick            = new Joystick(1);
+    Joystick   rightStick           = new Joystick(2);
+    RobotDrive drive                = new RobotDrive(1,2);
+    Talon      intakeMotor          = new Talon(3);
+    Talon      wench                = new Talon(4);
+    Compressor compressor           = new Compressor(14,1);
+    DigitalInput lim_switch         = new DigitalInput(1);
+    Solenoid   intake_1             = new Solenoid(1);
+    Solenoid   intake_2             = new Solenoid(2);
+    Solenoid   shift_1              = new Solenoid(3);
+    Solenoid   shift_2              = new Solenoid(4);
+    Solenoid   lock_1               = new Solenoid(5);
+    Solenoid   lock_2               = new Solenoid(6);
+    Timer      time_1               = new Timer();
     
+    boolean    intakeDown           = false;
+    boolean    intake               = false;
+    boolean    winchDown            = false;
+    boolean    shifted              = false;
+    boolean    locked               = false;
     
-    static double X, Y; //translation (strings to doubles) from Pi (from vision class)
-    double[] xy; //Pi target coordinate values after moving average filter
-       
-    public static double motor_x; //motor x-value
-    public static double motor_y; //motor y-value
+    double     driveLeft            = 0;
+    double     driveRight           = 0;
     
-    public static double lz_X; //localized x-coordinate
-    public static double lz_Y; //localized y-coordinate
-    public static double t;    //timer value used for acceleration -> position integration 
-    Timer time;
-    
-    public void robotInit() {
-        drive       = new RobotDrive(Map.leftDriveMotor, Map.rightDriveMotor);
-        ard_X       = new AnalogChannel(Map.arduino_X);
-        ard_Y       = new AnalogChannel(Map.arduino_Y);
-        winch       = new Talon(Map.winchMotor);
-        intake      = new Talon(Map.intakeMotor);
-        limSwitch   = new DigitalInput(Map.limSwitchPort);
-        kicker      = new DoubleSolenoid(Map.kicker1, Map.kicker2);
-        leftDrive   = new Encoder(Map.leftEncoder_a, Map.leftEncoder_b);
-        rightDrive  = new Encoder(Map.rightEncoder_a, Map.rightEncoder_b);
-        leftStick   = new Joystick(1);
-        rightStick  = new Joystick(2);
-        
-        xy      = Vision.average(X, Y);
-        lz_X    = 0;
-        lz_Y    = 0;
-        
-        Network.NetIn();
-    }
-    
-    public void autonomousPeriodic() {
-        
-    }
-
    
-    public void teleopPeriodic() { //DO NOT RUN THIS. IF I SEE YOU RUN THIS I WILL EAT YOUR FAMILY.
+    public void autonomous() {
         
-        Network.NetIn();
-        xy = Accelerometer.average(ard_X.getValue(), ard_Y.getValue());
-        Accelerometer.localize(xy[0], xy[1]);
-        Vision.average(X, Y);
+    }
+
+    public void operatorControl() {
+        compressor.start();
         
-        //timer start/stop operations for localization calculations
-        if (motor_x != 0 || motor_y != 0) 
-            time.start();
-        else if (Math.abs(motor_x) < .05 && Math.abs(motor_y) < .05) 
-            time.stop();
-            time.reset();
-            t = 0;
-        t = time.get();
-        
-        
-        
-        
-        System.out.println("Localized coordinates:  " + lz_X + " " + lz_Y);
-        System.out.print("Vision coordinates:  " + X + " " + Y);
-        
-        
+        while (isOperatorControl() && isEnabled()) {
+            if (Math.abs(leftStick.getAxis(Joystick.AxisType.kX)) > 0.15)           
+                drive.arcadeDrive(leftStick);
+            else if (Math.abs(leftStick.getAxis(Joystick.AxisType.kY)) > 0.15)
+                drive.arcadeDrive(leftStick);
+            else
+                drive.arcadeDrive(0,0);
+            wench.set(rightStick.getAxis(Joystick.AxisType.kY));
+                       
+/*left*/    if (leftStick.getRawButton(6)) 
+                shifted = true;
+            else if (leftStick.getRawButton(7)) 
+                shifted = false;
+            
+/*right*/   if (rightStick.getRawButton(3)) 
+                winchDown = true;
+            
+            if (rightStick.getRawButton(7) && intake == false)
+                intake    = true;
+            else if (rightStick.getRawButton(7) && intake == true) 
+                intake    = false;
+            
+            if (rightStick.getRawButton(2) && rightStick.getTrigger()) 
+                locked = false;
+            
+////////////////////////////////////////////////////////////////////////////////
+            
+/*winch*/   if (winchDown = true && lim_switch.get() == false) 
+                wench.set(.4);            
+            else if (lim_switch.get()) 
+                wench.set(rightStick.getAxis(Joystick.AxisType.kY));
+                winchDown = false;
+                locked = true;
+            
+/*lock*/    if (locked) {
+                lock_1.set(true);
+                lock_2.set(false);}
+            else if (locked == false) 
+                lock_1.set(false);
+                lock_2.set(true);
+            
+/*intake-m*/if (intake) 
+                intakeMotor.set(1);
+            else if (intake == false) 
+                intakeMotor.set(0);
+            
+/*shifters*/if (shifted) {
+                shift_1.set(true);
+                shift_2.set(false);}
+            else 
+                shift_1.set(false);
+                shift_2.set(true);
+            
+            Timer.delay(.01);
+            
+        }
     }
     
-    public void testPeriodic() {
-        //method used for testing of basic code, prototyping, etc.
-        getWatchdog().setEnabled(true);
-        getWatchdog().setExpiration(0.1);
-        getWatchdog().feed();
-        
-        drive.arcadeDrive(leftStick);
-        
-        //KICKER SOLENOID, TRIGGER ENABLE
-        if (leftStick.getTrigger()) {
-            kicker.set(DoubleSolenoid.Value.kForward);
-        }
-        else {
-            kicker.set(DoubleSolenoid.Value.kReverse);
-        }
-        
-        //INTAKE MOTOR SET TO 20% BY BUTTON 5, -20% BY BUTTON 6
-        if (leftStick.getRawButton(5)) {
-            intake.set(.2);
-        }
-        else if (leftStick.getRawButton(6)) {
-            intake.set(-.2);
-        }
-        else {
-            intake.set(0);
-        }
-        
-        //WINCH MOTOR SET TO 30% BY BUTTON 7, -30% BY BUTTON 8
-        if (leftStick.getRawButton(7)) {
-            winch.set(.3);
-        }
-        else if (leftStick.getRawButton(8)) {
-            winch.set(-.3);
-        }
-        else {
-            winch.set(0);
-        }
-        
-        
+    public void test() {
+    
     }
+    
+    
 }
-
-
