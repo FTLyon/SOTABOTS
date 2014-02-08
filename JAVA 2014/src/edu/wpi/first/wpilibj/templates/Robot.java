@@ -41,9 +41,12 @@ public class RobotTemplate extends SimpleRobot {
     boolean    shoot_1              = false;
     boolean    shoot_2              = false;
     boolean    shoot_3              = false;
+    boolean    unwind               = false;
     
     double     driveLeft            = 0;
     double     driveRight           = 0;
+    
+    double     fiveRev              = 0;
     
    
     public void autonomous() {
@@ -135,7 +138,8 @@ public class RobotTemplate extends SimpleRobot {
             
 /*lock*/    if (locked) {
                 lock_1.set(false);
-                lock_2.set(true);}
+                lock_2.set(true);
+                unwind = true;}
             else if (locked == false) {
                 winchEncoder.reset();
                 winchEncoder.start();
@@ -163,7 +167,15 @@ public class RobotTemplate extends SimpleRobot {
             else {
                 shift_1.set(false);
                 shift_2.set(true);}
-            
+
+/*winch prep for shoot*/
+            if (unwind && winchEncoder.get() < fiveRev) {
+                wench.set(.5);
+            }
+            else {
+                unwind = false;
+                winchEncoder.reset();
+            }
             Timer.delay(.01);
             
         
