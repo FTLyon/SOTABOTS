@@ -141,8 +141,6 @@ public class RobotTemplate extends SimpleRobot {
                 lock_2.set(true);
                 unwind = true;}
             else if (locked == false) {
-                winchEncoder.reset();
-                winchEncoder.start();
                 System.out.println(winchEncoder.get());
                 lock_1.set(true);
                 lock_2.set(false);
