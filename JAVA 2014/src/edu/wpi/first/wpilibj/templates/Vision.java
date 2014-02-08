@@ -1,7 +1,6 @@
 package edu.wpi.first.wpilibj.templates;
 
 import edu.wpi.first.wpilibj.Timer;
-import edu.wpi.first.wpilibj.templates.Robot.*;
 import java.util.*;
 /**
  *
@@ -18,6 +17,8 @@ public class Vision {
     public static double y_target;
     public static double tolerance_x;
     public static double tolerance_y;
+    public static double motor_x;
+    public static double motor_y;   
     
 
     public static double[] average (double inputX, double inputY) {
@@ -62,22 +63,22 @@ public class Vision {
         
         //if target is on LEFT SIDE and outside tolerance
         while (x < x_target - tolerance_x) {
-            Robot.motor_x = .1 * (x_target - x);
+            motor_x = .1 * (x_target - x);
         }
         
         //if target is on RIGHT SIDE and outside tolerance
         while (x > x_target + tolerance_x) {
-            Robot.motor_x = .1 * (x - x_target);
+            motor_x = .1 * (x - x_target);
         }
         
         //if target is ABOVE and outside tolerance (INVERT Y-COORDINATE FIRST!!!)
         while (y < y_target - tolerance_y) {
-            Robot.motor_y = .1 * (y_target - y);
+            motor_y = .1 * (y_target - y);
         }
         
         //if target is BELOW and outside tolerance 
         while (y > y_target + tolerance_y) {
-            Robot.motor_y = .1 * (y - y_target);
+            motor_y = .1 * (y - y_target);
         }
         
         
