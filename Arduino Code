@@ -1,0 +1,100 @@
+int led = 13;
+void setup() {
+    pinMode(13, OUTPUT);
+    
+  }
+void loop() {
+  int dot = 250;
+  int dash = 750;
+  int partspace = 250;
+  int letterspace = 750;
+  int space = 1750;
+  digitalWrite(13, HIGH);       
+  delay(dot);        //2
+  digitalWrite(13, LOW);
+  delay(partspace);
+  digitalWrite(13, HIGH);       
+  delay(dot);
+  digitalWrite(13, LOW);
+  delay(partspace);
+  digitalWrite(13, HIGH);       
+  delay(dash);
+  digitalWrite(13, LOW);
+  delay(partspace);
+  digitalWrite(13, HIGH);       
+  delay(dash);
+  digitalWrite(13, LOW);
+  delay(partspace);
+  digitalWrite(13, HIGH);       
+  delay(dash);
+  digitalWrite(13, LOW);
+  delay(letterspace);
+  digitalWrite(13, HIGH);       
+  delay(dash);        //c
+  digitalWrite(13, LOW);
+  delay(partspace);
+  digitalWrite(13, HIGH);       
+  delay(dash);
+  digitalWrite(13, LOW);
+  delay(partspace);
+  digitalWrite(13, HIGH);       
+  delay(dot);
+  digitalWrite(13, LOW);
+  delay(letterspace);
+  digitalWrite(13, HIGH);       
+  delay(dot);        //h
+  digitalWrite(13, LOW);
+  delay(partspace);
+  digitalWrite(13, HIGH);       
+  delay(dot);
+  digitalWrite(13, LOW);
+  delay(partspace);
+  digitalWrite(13, HIGH);       
+  delay(dot);
+  digitalWrite(13, LOW);
+  delay(partspace);
+  digitalWrite(13, HIGH);       
+  delay(dot);
+  digitalWrite(13, LOW);
+  delay(letterspace);
+  digitalWrite(13, HIGH);       
+  delay(dot);
+  digitalWrite(13, LOW);
+  delay(partspace);
+  digitalWrite(13, HIGH);       
+  delay(dash);      //a
+  digitalWrite(13, LOW);
+  delay(letterspace);
+  digitalWrite(13, HIGH);       
+  delay(dot);      //i
+  digitalWrite(13, LOW);
+  delay(partspace);
+  digitalWrite(13, HIGH);       
+  delay(dot);
+  digitalWrite(13, LOW);
+  delay(letterspace);
+  digitalWrite(13, HIGH);       
+  delay(dash);    //n
+  digitalWrite(13, LOW);
+  delay(partspace);
+  digitalWrite(13, HIGH);       
+  delay(dot);
+  digitalWrite(13, LOW);
+  delay(letterspace);
+  digitalWrite(13, HIGH);       
+  delay(dash);      //z
+  digitalWrite(13, LOW);
+  delay(partspace);
+  digitalWrite(13, HIGH);       
+  delay(dash);
+  digitalWrite(13, LOW);
+  delay(partspace);
+  digitalWrite(13, HIGH);       
+  delay(dot);
+  digitalWrite(13, LOW);
+  delay(partspace);
+  digitalWrite(13, HIGH);       
+  delay(dot);
+  digitalWrite(13, LOW);
+  delay(space);
+}
