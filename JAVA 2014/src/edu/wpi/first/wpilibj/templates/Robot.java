@@ -1,5 +1,6 @@
 package edu.wpi.first.wpilibj.templates;
 
+import edu.wpi.first.wpilibj.AnalogChannel;
 import edu.wpi.first.wpilibj.Compressor;
 import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj.DigitalOutput;
@@ -26,11 +27,18 @@ public class RobotTemplate extends SimpleRobot {
     Solenoid   shift_2              = new Solenoid(4);
     Solenoid   lock_1               = new Solenoid(5);
     Solenoid   lock_2               = new Solenoid(6);
-    Encoder    winchEncoder         = new Encoder(1,2);
+    Encoder    winchEncoder         = new Encoder(6,7);
+    Encoder    drive_1              = new Encoder(2,3);
+    Encoder    drive_2              = new Encoder(4,5);
     DigitalOutput mode_1            = new DigitalOutput(1);
     DigitalOutput mode_2            = new DigitalOutput(2);
     DigitalOutput mode_3            = new DigitalOutput(3);
     DigitalOutput mode_groovy       = new DigitalOutput(4);
+    DigitalOutput mode_5            = new DigitalOutput(5);//
+    DigitalOutput mode_6            = new DigitalOutput(6);
+    AnalogChannel accel_x           = new AnalogChannel(1);
+    AnalogChannel accel_y           = new AnalogChannel(2);
+    AnalogChannel gyro_x            = new AnalogChannel(3);
     Timer      time_1               = new Timer();
     
     boolean    intakeDown           = true;
@@ -48,26 +56,36 @@ public class RobotTemplate extends SimpleRobot {
     
     double     fiveRev              = 0;
     
+    double     index                = 0;
+    
    
     public void autonomous() {
-        mode_1.set(true);
+        //mode_1.set(true);
     }
 
     public void operatorControl() {
         compressor.start();
         winchEncoder.start();
-        while (isOperatorControl() && isEnabled()) 
-            Network.NetIn();
-            
+        //mode_1.set(false);
+        while (isOperatorControl() && isEnabled()) {
+            //Network.NetIn();
+            //System.out.print(accel_x.getAverageVoltage());
+            //System.out.println(accel_y.getAverageVoltage());
+            if (index > 1000) {
+                System.out.println(winchEncoder.getDistance());
+                index = 0;}
+            else
+                index++;
+           
             if (Math.abs(leftStick.getAxis(Joystick.AxisType.kX)) > 0.15)   {        
                 drive.arcadeDrive(leftStick);}
             else if (Math.abs(leftStick.getAxis(Joystick.AxisType.kY)) > 0.15) {
                 drive.arcadeDrive(leftStick);}
             else{
                 drive.arcadeDrive(0,0);}
-            wench.set(rightStick.getAxis(Joystick.AxisType.kY));
             
-                       
+            wench.set(rightStick.getAxis(Joystick.AxisType.kY));
+                                   
 /*left*/    if (leftStick.getRawButton(6)) {
                 shifted = true;}
             else if (leftStick.getRawButton(7)) {
@@ -78,6 +96,11 @@ public class RobotTemplate extends SimpleRobot {
             }
             else if (leftStick.getRawButton(2)) {
                 intakeDown = false;
+            }
+            
+/*auto vision*/            
+            if (leftStick.getRawButton(8) && leftStick.getRawButton(9)) {
+                //target code here, pull from Vision class
             }
             
 /*right*/   if (rightStick.getRawButton(3)) {
@@ -176,9 +199,9 @@ public class RobotTemplate extends SimpleRobot {
             }
             Timer.delay(.01);
             
-        
-    }
+        }
     
+    }
     public void test() {
     
     }
