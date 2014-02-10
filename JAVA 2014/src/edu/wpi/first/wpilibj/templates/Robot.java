@@ -71,6 +71,10 @@ public class RobotTemplate extends SimpleRobot {
             //Network.NetIn();
             //System.out.print(accel_x.getAverageVoltage());
             //System.out.println(accel_y.getAverageVoltage());
+            System.out.print("Winch: " + winchEncoder.getDistance());
+            System.out.print("Left drive: " + drive_1.getDistance());
+            System.out.println("Right drive: " + drive_2);
+            
             if (index > 1000) {
                 System.out.println(winchEncoder.getDistance());
                 index = 0;}
