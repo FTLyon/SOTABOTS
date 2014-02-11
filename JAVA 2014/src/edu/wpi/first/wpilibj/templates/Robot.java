@@ -73,9 +73,9 @@ public class RobotTemplate extends SimpleRobot {
             //Network.NetIn();
             //System.out.print(accel_x.getAverageVoltage());
             //System.out.println(accel_y.getAverageVoltage());
-
             
-                      
+            dist_1 += winchEncoder.get();
+            
             if (Math.abs(leftStick.getAxis(Joystick.AxisType.kX)) > 0.15)   {        
                 drive.arcadeDrive(leftStick);}
             else if (Math.abs(leftStick.getAxis(Joystick.AxisType.kY)) > 0.15) {
@@ -207,15 +207,10 @@ public class RobotTemplate extends SimpleRobot {
 /*winch prep for shoot*/
             if (unwind && dist_1 > fiveRev && time_1.get() > 1) {
                 wench.set(.5);
-                if (first = false) {
-                    dist_1 = 0;
-                    first = true;
-                }
-                else {
-                    dist_1 += winchEncoder.get();
-                }
-
             }
+            else if (unwind && time_1.get() <= 1) {
+                wench.set(0);
+            } 
             else {
                 unwind = false;
                 winchEncoder.reset();
