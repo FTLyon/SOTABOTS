@@ -3,6 +3,7 @@ package edu.wpi.first.wpilibj.templates;
 import edu.wpi.first.wpilibj.AnalogChannel;
 import edu.wpi.first.wpilibj.Compressor;
 import edu.wpi.first.wpilibj.DigitalInput;
+import edu.wpi.first.wpilibj.DigitalOutput;
 import edu.wpi.first.wpilibj.Encoder;
 import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj.RobotDrive;
@@ -29,36 +30,27 @@ public class RobotTemplate extends SimpleRobot {
     Encoder    winchEncoder         = new Encoder(6,7);
     Encoder    drive_1              = new Encoder(2,3);
     Encoder    drive_2              = new Encoder(4,5);
-    //DigitalOutput mode_1            = new DigitalOutput(1); **MUST re-wire these to 
-//    DigitalOutput mode_2            = new DigitalOutput(2);   avoid conflict with current
-//    DigitalOutput mode_3            = new DigitalOutput(3);   wiring.
-//    DigitalOutput mode_groovy       = new DigitalOutput(4);
-//    DigitalOutput mode_5            = new DigitalOutput(5);//
-//    DigitalOutput mode_6            = new DigitalOutput(6);
-    AnalogChannel accel_x           = new AnalogChannel(1);   //wiring of these occurs directly
-    AnalogChannel accel_y           = new AnalogChannel(2);   //on CRIO analog module
-    AnalogChannel gyro_x            = new AnalogChannel(3);
-    Timer      time_1               = new Timer();
+    DigitalOutput mode_1            = new DigitalOutput(8);
+    DigitalOutput mode_2            = new DigitalOutput(9);   
+    DigitalOutput mode_3            = new DigitalOutput(10);  
+    DigitalOutput mode_4            = new DigitalOutput(11);
+    DigitalOutput mode_5            = new DigitalOutput(12);//
     
     boolean    intakeDown           = true;
     boolean    intake               = false;
-    boolean    winchDown            = false;
     boolean    shifted              = false;
-    boolean    locked               = false;
     boolean    shoot_1              = false;
     boolean    shoot_2              = false;
-    boolean    first                = false;
     boolean    shoot_3              = false;
-    boolean    unwind               = false;
+    boolean    pressed              = false;
     
     double     driveLeft            = 0;
     double     driveRight           = 0;
     
-    double     fiveRev              = -10000;
+    double     fiveRev              = -1905;
     
-    double     index                = 0;
     
-    double     dist_1               = 0;
+    
     
    
     public void autonomous() {
@@ -71,10 +63,6 @@ public class RobotTemplate extends SimpleRobot {
         //mode_1.set(false);
         while (isOperatorControl() && isEnabled()) {
             //Network.NetIn();
-            //System.out.print(accel_x.getAverageVoltage());
-            //System.out.println(accel_y.getAverageVoltage());
-            
-            dist_1 += winchEncoder.get();
             
             if (Math.abs(leftStick.getAxis(Joystick.AxisType.kX)) > 0.15)   {        
                 drive.arcadeDrive(leftStick);}
@@ -83,22 +71,19 @@ public class RobotTemplate extends SimpleRobot {
             else{
                 drive.arcadeDrive(0,0);}
             
-            wench.set(rightStick.getAxis(Joystick.AxisType.kY));
                                    
 /*left*/    if (leftStick.getRawButton(6)) {
                 shifted = true;}
             else if (leftStick.getRawButton(7)) {
                 shifted = false;}
             
-            if (leftStick.getRawButton(3)) {
-                intakeDown = true;
-            }
+            
             else if (leftStick.getRawButton(2)) {
                 intakeDown = false;
             }
             
             if (leftStick.getRawButton(4)) {
-                System.out.println(dist_1);
+                System.out.println(winchEncoder.get());
             }
             
 /*auto vision*/            
@@ -125,64 +110,41 @@ public class RobotTemplate extends SimpleRobot {
                 locked = false;
                 winchDown = false;
                 winchEncoder.reset();
-                dist_1 = 0;
             }
-            else {
-                lock_1.set(false);
-                lock_2.set(true);
+            if (rightStick.getRawButton(3) && lim_switch.get() == true) {
+                wench.set(-.5);
             }
-            
-///*groovy*/  if (rightStick.getRawButton(4)) { //button 4
-//               // mode_1.set(false);
-//                mode_2.set(false);
-//                mode_3.set(false);
-//                mode_groovy.set(true);
-//            }
-//            
-///*mode2*/   if (rightStick.getRawButton(5)) { //button 5
-//                //mode_1.set(false);
-//                mode_2.set(true);
-//                mode_3.set(false);
-//                mode_groovy.set(false);
-//            }
-//
-///*mode3*/   if (rightStick.getRawButton(9)) { //button 9
-//               // mode_1.set(false);
-//                mode_2.set(false);
-//                mode_3.set(true);
-//                mode_groovy.set(false);
-//            }
-                        
-////////////////////////////////////////////////////////////////////////////////
-            
-/*winch*/   if (winchDown == true && lim_switch.get() == true && rightStick.getRawButton(0) == false && rightStick.getRawButton(3)) {
-                wench.set(-.4);
-                locked = false;}
-            else if (lim_switch.get() == false && rightStick.getRawButton(0) == false && winchDown == true) {
-                wench.set(rightStick.getAxis(Joystick.AxisType.kY));
-                dist_1 = 0;
-                //winchDown = false;
-                locked = true;}
             else if (lim_switch.get() == false && rightStick.getRawButton(3)) {
-                locked = true;
-                dist_1 = 0;
-            }
-            
-            
-            
-/*lock*/    if (locked) {
+                winchEncoder.reset();
                 lock_1.set(false);
                 lock_2.set(true);
-                time_1.reset();
-                time_1.start();
-                System.out.println(time_1.get());
-                unwind = true;
-}
-            else if (locked == false) {
-                //System.out.println(winchEncoder.get());
+            }
+            else if (lim_switch.get() == false && winchEncoder.get() > -1000) {
+                pressed = true;
+                lock_1.set(false);
+                lock_2.set(true);
+                wench.set(.4);
+            }
+            else if (rightStick.getTrigger()) {
+                pressed = false;
                 lock_1.set(true);
                 lock_2.set(false);
-                }
+                wench.set(rightStick.getAxis(Joystick.AxisType.kY));
+            }
+            else if (pressed && winchEncoder.get() <= -1000) {
+                lock_1.set(false);
+                lock_2.set(true);
+                wench.set(0);
+            }
+            else  if (pressed == false) {
+                wench.set(rightStick.getAxis(Joystick.AxisType.kY));
+                lock_1.set(true);
+                lock_2.set(false);
+            }
+            
+            if (rightStick.getRawButton(4)) {
+                System.out.println(winchEncoder.get());
+            }
             
 /*intake-m*/if (intake) {
                 intakeMotor.set(1);}
@@ -204,17 +166,7 @@ public class RobotTemplate extends SimpleRobot {
                 shift_1.set(false);
                 shift_2.set(true);}
 
-/*winch prep for shoot*/
-            if (unwind && dist_1 > fiveRev && time_1.get() > 1) {
-                wench.set(.5);
-            }
-            else if (unwind && time_1.get() <= 1) {
-                wench.set(0);
-            } 
-            else {
-                unwind = false;
-                winchEncoder.reset();
-            }
+            
             Timer.delay(.01);
             
         }
@@ -223,6 +175,5 @@ public class RobotTemplate extends SimpleRobot {
     public void test() {
     
     }
-    
     
 }
