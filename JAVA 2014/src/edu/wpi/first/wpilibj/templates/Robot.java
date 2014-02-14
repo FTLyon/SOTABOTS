@@ -36,6 +36,8 @@ public class RobotTemplate extends SimpleRobot {
     DigitalOutput mode_4            = new DigitalOutput(11);
     DigitalOutput mode_5            = new DigitalOutput(12);//
     
+    DigitalOutput[] modes           = new DigitalOutput[] {mode_1,mode_2,mode_3, mode_4, mode_5};
+    
     boolean    intakeDown           = true;
     boolean    intake               = false;
     boolean    shifted              = false;
@@ -48,6 +50,7 @@ public class RobotTemplate extends SimpleRobot {
     double     driveRight           = 0;
     
     double     fiveRev              = -1905;
+    int        modeIndex            = 0;
     
     
     
@@ -60,9 +63,16 @@ public class RobotTemplate extends SimpleRobot {
     public void operatorControl() {
         compressor.start();
         winchEncoder.start();
-        //mode_1.set(false);
+
         while (isOperatorControl() && isEnabled()) {
             //Network.NetIn();
+            
+            for (int i = 0; i < modes.length - 1; i ++) {
+                if (i == modeIndex)
+                    modes[i].set(true);
+                else
+                    modes[i].set(false);
+             }
             
             if (Math.abs(leftStick.getAxis(Joystick.AxisType.kX)) > 0.15)   {        
                 drive.arcadeDrive(leftStick);}
@@ -86,17 +96,17 @@ public class RobotTemplate extends SimpleRobot {
                 System.out.println(winchEncoder.get());
             }
             
+            if (leftStick.getTrigger()) {
+                modeIndex ++;
+            }
+            
+            
 /*auto vision*/            
             if (leftStick.getRawButton(8) && leftStick.getRawButton(9)) {
                 //target code here, pull from Vision class
             }
             
-/*right*/   if (rightStick.getRawButton(3)) {
-                winchDown = true;}
-            else {
-                winchDown = false;
-            }           
-            if (rightStick.getRawButton(7)) {
+/*right*/   if (rightStick.getRawButton(7)) {
                 intake = true;
             }
             else if (rightStick.getRawButton(6)) {
@@ -105,12 +115,7 @@ public class RobotTemplate extends SimpleRobot {
             else {
                 intake = false;
             }
-             
-            if (rightStick.getTrigger() && rightStick.getRawButton(2)) {
-                locked = false;
-                winchDown = false;
-                winchEncoder.reset();
-            }
+            
             if (rightStick.getRawButton(3) && lim_switch.get() == true) {
                 wench.set(-.5);
             }
