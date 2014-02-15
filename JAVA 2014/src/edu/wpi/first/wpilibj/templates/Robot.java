@@ -8,9 +8,10 @@ import edu.wpi.first.wpilibj.Encoder;
 import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj.RobotDrive;
 import edu.wpi.first.wpilibj.SimpleRobot;
-import edu.wpi.first.wpilibj.Solenoid;
+import edu.wpi .first.wpilibj.Solenoid;
 import edu.wpi.first.wpilibj.Talon;
 import edu.wpi.first.wpilibj.Timer;
+import edu.wpi.first.wpilibj.SafePWM;
 
 
 
@@ -183,7 +184,7 @@ public class Robot extends SimpleRobot {
         
         if(status == 0)
         {
-            intakeMotor.set(0);
+            intakeMotor.stopMotor();
         } else if(status == 1)
         {
             intakeMotor.set(1);
