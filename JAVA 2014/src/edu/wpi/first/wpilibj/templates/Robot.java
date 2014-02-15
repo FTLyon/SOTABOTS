@@ -13,7 +13,8 @@ import edu.wpi.first.wpilibj.Talon;
 import edu.wpi.first.wpilibj.Timer;
 
 
-public class RobotTemplate extends SimpleRobot {
+
+public class Robot extends SimpleRobot {
     Joystick   leftStick            = new Joystick(1);
     Joystick   rightStick           = new Joystick(2);
     RobotDrive drive                = new RobotDrive(1,2);
@@ -34,12 +35,12 @@ public class RobotTemplate extends SimpleRobot {
     DigitalOutput mode_2            = new DigitalOutput(9);   
     DigitalOutput mode_3            = new DigitalOutput(10);  
     DigitalOutput mode_4            = new DigitalOutput(11);
-    DigitalOutput mode_5            = new DigitalOutput(12);//
+    DigitalOutput mode_5            = new DigitalOutput(12);
     
     DigitalOutput[] modes           = new DigitalOutput[] {mode_1,mode_2,mode_3, mode_4, mode_5};
     
     boolean    intakeDown           = true;
-    boolean    intake               = false;
+    int        intake               = 0;
     boolean    shifted              = false;
     boolean    shoot_1              = false;
     boolean    shoot_2              = false;
@@ -49,13 +50,8 @@ public class RobotTemplate extends SimpleRobot {
     double     driveLeft            = 0;
     double     driveRight           = 0;
     
-    double     fiveRev              = -1905;
     int        modeIndex            = 0;
-    
-    
-    
-    
-   
+
     public void autonomous() {
         //mode_1.set(true);
     }
@@ -91,6 +87,9 @@ public class RobotTemplate extends SimpleRobot {
             else if (leftStick.getRawButton(2)) {
                 intakeDown = false;
             }
+            else if (leftStick.getRawButton(3)){
+                intakeDown = true;
+            }
             
             if (leftStick.getRawButton(4)) {
                 System.out.println(winchEncoder.get());
@@ -107,20 +106,20 @@ public class RobotTemplate extends SimpleRobot {
             }
             
 /*right*/   if (rightStick.getRawButton(7)) {
-                intake = true;
+                intake = 1;
             }
             else if (rightStick.getRawButton(6)) {
-                intakeMotor.set(-1);
+                intake = 2;
+            } else {
+                intake = 0;
             }
-            else {
-                intake = false;
-            }
-            
+
             if (rightStick.getRawButton(3) && lim_switch.get() == true) {
-                wench.set(-.5);
+                wench.set(-.7);
             }
             else if (lim_switch.get() == false && rightStick.getRawButton(3)) {
                 winchEncoder.reset();
+                
                 lock_1.set(false);
                 lock_2.set(true);
             }
@@ -128,7 +127,7 @@ public class RobotTemplate extends SimpleRobot {
                 pressed = true;
                 lock_1.set(false);
                 lock_2.set(true);
-                wench.set(.4);
+                wench.set(.7);
             }
             else if (rightStick.getTrigger()) {
                 pressed = false;
@@ -136,7 +135,7 @@ public class RobotTemplate extends SimpleRobot {
                 lock_2.set(false);
                 wench.set(rightStick.getAxis(Joystick.AxisType.kY));
             }
-            else if (pressed && winchEncoder.get() <= -1000) {
+            else if (pressed && winchEncoder.get() <= -1820) {
                 lock_1.set(false);
                 lock_2.set(true);
                 wench.set(0);
@@ -151,10 +150,9 @@ public class RobotTemplate extends SimpleRobot {
                 System.out.println(winchEncoder.get());
             }
             
-/*intake-m*/if (intake) {
-                intakeMotor.set(1);}
-            else if (intake == false) {
-                intakeMotor.set(0);}
+/*intake-m*/
+            SetIntakeMotor(intake);
+            
 /*intake-down*/
             if (intakeDown) {
                 intake_1.set(true);
@@ -175,10 +173,26 @@ public class RobotTemplate extends SimpleRobot {
             Timer.delay(.01);
             
         }
+    }
     
+    private void SetIntakeMotor(int status)
+    {
+        /* 0 = stop */
+        /* 1 = forward */
+        /* 2 = backward */
+        
+        if(status == 0)
+        {
+            intakeMotor.set(0);
+        } else if(status == 1)
+        {
+            intakeMotor.set(1);
+        } else if(status == 2)
+        {
+            intakeMotor.set(-1);
+        }
     }
     public void test() {
     
     }
-    
 }
