@@ -185,10 +185,12 @@ public class Robot extends SimpleRobot {
         if(status == 0)
         {
             intakeMotor.stopMotor();
-        } else if(status == 1)
+        } 
+        else if(status == 1)
         {
             intakeMotor.set(1);
-        } else if(status == 2)
+        } 
+        else if(status == 2)
         {
             intakeMotor.set(-1);
         }
