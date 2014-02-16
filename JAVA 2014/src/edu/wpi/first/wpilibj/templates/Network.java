@@ -1,7 +1,3 @@
-/*
- * To change this template, choose Tools | Templates
- * and open the template in the editor.
- */
 package edu.wpi.first.wpilibj.templates;
 
 import com.sun.squawk.io.BufferedReader;
@@ -19,10 +15,9 @@ import javax.microedition.io.SocketConnection;
  */
 public class Network {
     
-    public static void NetIn() {
+    public static String[] NetIn() {
         int i = 0;
-        String[] xy = null;
-        while(true) {
+        String[] xy = new String[]{"-1","-1","-1","-1"};
         try {
             //Network input from Raspberry pi
             SocketConnection sc = (SocketConnection)Connector.open("socket://10.25.57.6:111");
@@ -30,15 +25,13 @@ public class Network {
             InputStream is = sc.openInputStream();
             BufferedReader in = new BufferedReader(new InputStreamReader(is));
             xy = Split(in.readLine().toString(), " ");
-            Robot.X = Integer.parseInt(xy[0]);
-            Robot.Y = Integer.parseInt(xy[1]);
+            //System.out.println(xy);
             Timer.delay(.01);
         } catch (IOException ex) {
             System.out.println("Recieve data failed.");
             Timer.delay(.1);
         }
-        
-    }
+        return xy;    
     }
     
     public static String[] Split(String splitStr, String delimiter) {  
@@ -69,5 +62,3 @@ public class Network {
     return splitArray;  
 }  
 }
-            
-
