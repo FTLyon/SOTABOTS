@@ -1,6 +1,5 @@
 package edu.wpi.first.wpilibj.templates;
 
-import edu.wpi.first.wpilibj.AnalogChannel;
 import edu.wpi.first.wpilibj.Compressor;
 import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj.DigitalOutput;
@@ -11,11 +10,10 @@ import edu.wpi.first.wpilibj.SimpleRobot;
 import edu.wpi .first.wpilibj.Solenoid;
 import edu.wpi.first.wpilibj.Talon;
 import edu.wpi.first.wpilibj.Timer;
-import edu.wpi.first.wpilibj.SafePWM;
 
 
 
-public class Robot extends SimpleRobot {
+public class RobotTemplate extends SimpleRobot {
     Joystick   leftStick            = new Joystick(1);
     Joystick   rightStick           = new Joystick(2);
     RobotDrive drive                = new RobotDrive(1,2);
@@ -41,7 +39,6 @@ public class Robot extends SimpleRobot {
     DigitalOutput[] modes           = new DigitalOutput[] {mode_1,mode_2,mode_3, mode_4, mode_5};
     
     boolean    intakeDown           = true;
-    int        intake               = 0;
     boolean    shifted              = false;
     boolean    shoot_1              = false;
     boolean    shoot_2              = false;
@@ -52,6 +49,11 @@ public class Robot extends SimpleRobot {
     double     driveRight           = 0;
     
     int        modeIndex            = 0;
+    int        intake               = 0;
+    
+    String[]   vision_coord         = null;
+    double[]   coordinates          = null;
+
 
     public void autonomous() {
         //mode_1.set(true);
@@ -62,7 +64,8 @@ public class Robot extends SimpleRobot {
         winchEncoder.start();
 
         while (isOperatorControl() && isEnabled()) {
-            //Network.NetIn();
+            vision_coord = Network.NetIn();
+            coordinates = Vision.average(Double.parseDouble(vision_coord[0]), Double.parseDouble(vision_coord[1]));
             
             for (int i = 0; i < modes.length - 1; i ++) {
                 if (i == modeIndex)
@@ -93,18 +96,13 @@ public class Robot extends SimpleRobot {
             }
             
             if (leftStick.getRawButton(4)) {
-                System.out.println(winchEncoder.get());
+                System.out.println(winchEncoder.get() + " " + coordinates[0] + " " + coordinates[1]);
             }
             
             if (leftStick.getTrigger()) {
-                modeIndex ++;
+                
             }
             
-            
-/*auto vision*/            
-            if (leftStick.getRawButton(8) && leftStick.getRawButton(9)) {
-                //target code here, pull from Vision class
-            }
             
 /*right*/   if (rightStick.getRawButton(7)) {
                 intake = 1;
