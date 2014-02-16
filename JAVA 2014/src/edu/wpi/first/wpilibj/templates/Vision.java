@@ -45,13 +45,18 @@ public class Vision {
         boolean leftRight = false; //false -> left; true -> right;
         
         if (c1 != null && c2 != null) {
-            Timer.delay(1);
+            System.out.println("      Seeing two targets");
         }
         else if (c1 == null) {
-            //Pass
+            System.out.println("        No targets");
         }
         else if (c1 != null) {
-            target(c1);
+            if (c1[0] < 640) {
+                leftRight = false;
+            }
+            else if (c1[0] > 640) {
+                leftRight = true;
+            }
         }
         
         return leftRight;
