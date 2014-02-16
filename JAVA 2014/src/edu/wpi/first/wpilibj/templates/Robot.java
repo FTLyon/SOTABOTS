@@ -134,7 +134,7 @@ public class RobotTemplate extends SimpleRobot {
                 lock_2.set(false);
                 wench.set(rightStick.getAxis(Joystick.AxisType.kY));
             }
-            else if (pressed && winchEncoder.get() <= -1820) {
+            else if (pressed && winchEncoder.get() <= -1920) {
                 lock_1.set(false);
                 lock_2.set(true);
                 wench.set(0);
