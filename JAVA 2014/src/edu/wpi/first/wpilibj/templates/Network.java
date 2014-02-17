@@ -20,7 +20,7 @@ public class Network {
         String[] xy = new String[]{"-1","-1","-1","-1"};
         try {
             //Network input from Raspberry pi
-            SocketConnection sc = (SocketConnection)Connector.open("socket://10.25.57.6:111");
+            SocketConnection sc = (SocketConnection)Connector.open("socket://10.25.57.10:111");
             sc.setSocketOption(SocketConnection.LINGER, 1);
             InputStream is = sc.openInputStream();
             BufferedReader in = new BufferedReader(new InputStreamReader(is));
