@@ -1,9 +1,10 @@
 package edu.wpi.first.wpilibj.templates;
+//KIRK FOREMAN IS ONLY WORTH SOMETHING AS A HUMAN SHIELD/BULLET SPONGE
 
 import edu.wpi.first.wpilibj.*;
 
 
-public class Robot extends SimpleRobot {
+public class RobotTemplate extends SimpleRobot {
     Joystick   leftStick            = new Joystick(1);
     Joystick   rightStick           = new Joystick(2);
     RobotDrive drive                = new RobotDrive(1,2);
@@ -39,8 +40,6 @@ public class Robot extends SimpleRobot {
     int        modeShift            = 0;
     int        modeFire             = 0;
     int        intake               = 0;
-    int        winchValue           = 0;
-    int        winchEncoderVal      = 0;
     
     String[]   vision_coord         = null;
     double[]   coordinates          = null;
@@ -61,12 +60,12 @@ public class Robot extends SimpleRobot {
         drive_2.reset();
         winchEncoder.reset();
         
-       // vision_coord = Network.NetIn();             //call and parse coordinates for targeting
-       //autoTarget_1 = Vision.average(Double.parseDouble(vision_coord[0]), Double.parseDouble(vision_coord[1]));
-       //autoTarget_2 = Vision.average(Double.parseDouble(vision_coord[2]), Double.parseDouble(vision_coord[3]));
+        vision_coord = Network.NetIn();             //call and parse coordinates for targeting
+        autoTarget_1 = Vision.average(Double.parseDouble(vision_coord[0]), Double.parseDouble(vision_coord[1]));
+        autoTarget_2 = Vision.average(Double.parseDouble(vision_coord[2]), Double.parseDouble(vision_coord[3]));
             
-        //leftRight = Vision.leftRight(autoTarget_1,autoTarget_2); //determine whether the target is on the L/R
-        //System.out.println(leftRight);
+        leftRight = Vision.leftRight(autoTarget_1,autoTarget_2); //determine whether the target is on the L/R
+        System.out.println(leftRight);
             
         AutoTarget(leftRight);              //runs targeting method
         Timer.delay(1);                     //wait 1s
@@ -76,7 +75,7 @@ public class Robot extends SimpleRobot {
           drive.arcadeDrive(.5,0);          //drive forward for 1000 encoder counts
             }
         drive.arcadeDrive(0,0);             //stop
-        Fire(0);
+        Fire(0);                            //unlatch
         }
 
     public void operatorControl() {
@@ -85,8 +84,8 @@ public class Robot extends SimpleRobot {
         modes[0].set(false);
 
         while (isOperatorControl() && isEnabled()) {
-            //vision_coord = Network.NetIn();
-            //coordinates = Vision.average(Double.parseDouble(vision_coord[0]), Double.parseDouble(vision_coord[1]));
+            vision_coord = Network.NetIn();
+            coordinates = Vision.average(Double.parseDouble(vision_coord[0]), Double.parseDouble(vision_coord[1]));
             
             
             if (Math.abs(leftStick.getAxis(Joystick.AxisType.kX)) > 0.15)   {   //drive
@@ -129,16 +128,16 @@ public class Robot extends SimpleRobot {
             }
 
             if (rightStick.getRawButton(3) && lim_switch.get() == true) {       //winch
-                winchValue = 1;
+                wench.set(-.7);
             }
             else if (lim_switch.get() == false && rightStick.getRawButton(3)) {
-                winchEncoderVal = 1;
+                winchEncoder.reset();
                 modeFire = 0;
             }
             else if (lim_switch.get() == false && winchEncoder.get() < 550) {
                 pressed = true;
                 modeFire = 0;
-                winchValue = 2;
+                wench.set(.7);
             }
             else if (rightStick.getTrigger()) {
                 pressed = false;
@@ -158,38 +157,16 @@ public class Robot extends SimpleRobot {
                 System.out.println(winchEncoder.get());
             }
             
+/*---------------------------------------------------------------------------*/
 
             SetIntakeMotor(intake);
             SetIntakeArm(modeArm);
             Shift(modeShift);
             LedMode(modeIndex);
             Fire(modeFire);
-            winchControl(winchValue);
-            methodWinchEncoder(winchEncoderVal);
             Timer.delay(.01);
             
         }
-    }
-    
-    
-    private void winchControl (int winchValue)
-    {
-        if (winchValue == 1){
-            wench.set(-.7);
-        }
-        else if (winchValue == 2){
-            wench.set(.7);
-        }
-        else {
-            wench.stopMotor();
-        }
-    }
-    
-    private void methodWinchEncoder(int winchEncoderVal)
-    {
-        if (winchEncoderVal == 1){
-            winchEncoder.reset();
-        }       
     }
     
     private void SetIntakeMotor(int status)
@@ -241,9 +218,12 @@ public class Robot extends SimpleRobot {
     }
     private void LedMode(int index) {
         /* 0 = yellow
-         * 1 = 
+         * 1 = blue
+         * 2 = red
+         * 3 = 'murica
+         * 4 = groovy
          */
-        if (index > modes.length - 1) {
+        if (index > 4) {        
             modeIndex = 0;
         }
         for (int i = 0; i < modes.length - 1; i ++) { 
@@ -283,4 +263,5 @@ public class Robot extends SimpleRobot {
     public void test() {
     
     }
+    
 }
