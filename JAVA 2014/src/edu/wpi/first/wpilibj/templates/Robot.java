@@ -1,7 +1,16 @@
 package edu.wpi.first.wpilibj.templates;
-//KIRK FOREMAN IS ONLY WORTH SOMETHING AS A HUMAN SHIELD/BULLET SPONGE
 
-import edu.wpi.first.wpilibj.*;
+import edu.wpi.first.wpilibj.Compressor;
+import edu.wpi.first.wpilibj.DigitalInput;
+import edu.wpi.first.wpilibj.DigitalOutput;
+import edu.wpi.first.wpilibj.Encoder;
+import edu.wpi.first.wpilibj.Joystick;
+import edu.wpi.first.wpilibj.RobotDrive;
+import edu.wpi.first.wpilibj.SimpleRobot;
+import edu.wpi .first.wpilibj.Solenoid;
+import edu.wpi.first.wpilibj.Talon;
+import edu.wpi.first.wpilibj.Timer;
+
 
 
 public class RobotTemplate extends SimpleRobot {
@@ -29,66 +38,72 @@ public class RobotTemplate extends SimpleRobot {
     
     DigitalOutput[] modes           = new DigitalOutput[] {mode_1,mode_2,mode_3, mode_4, mode_5};
     
+    boolean    intakeDown           = true;
+    boolean    shifted              = false;
+    boolean    shoot_1              = false;
+    boolean    shoot_2              = false;
+    boolean    shoot_3              = false;
     boolean    pressed              = false;
-    boolean    leftRight            = false;
     
     double     driveLeft            = 0;
     double     driveRight           = 0;
     
     int        modeIndex            = 0;
-    int        modeArm              = 0;
-    int        modeShift            = 0;
-    int        modeFire             = 0;
     int        intake               = 0;
     
     String[]   vision_coord         = null;
     double[]   coordinates          = null;
-    double[]   autoTarget_1         = null;
-    double[]   autoTarget_2         = null;
 
 
     public void autonomous() {
-        compressor.start();
-        Fire(0);
-        
-        modes[0].set(true); //yellow mode (1) for auto
-        
-        drive_1.start(); //enable and reset encoders for auto mode or something
-        drive_2.start();
-        winchEncoder.start();
-        drive_1.reset();
-        drive_2.reset();
-        winchEncoder.reset();
-        
-        vision_coord = Network.NetIn();             //call and parse coordinates for targeting
-        autoTarget_1 = Vision.average(Double.parseDouble(vision_coord[0]), Double.parseDouble(vision_coord[1]));
-        autoTarget_2 = Vision.average(Double.parseDouble(vision_coord[2]), Double.parseDouble(vision_coord[3]));
-            
-        leftRight = Vision.leftRight(autoTarget_1,autoTarget_2); //determine whether the target is on the L/R
-        System.out.println(leftRight);
-            
-        AutoTarget(leftRight);              //runs targeting method
-        Timer.delay(1);                     //wait 1s
-        Fire(1);                            //fires
-        drive_1.reset();                    //resets drive encoder
-        while (drive_1.get() < 1000) {
-          drive.arcadeDrive(.5,0);          //drive forward for 1000 encoder counts
-            }
-        drive.arcadeDrive(0,0);             //stop
-        Fire(0);                            //unlatch
-        }
+        //mode_1.set(true);
+    }
 
     public void operatorControl() {
         compressor.start();
         winchEncoder.start();
-        modes[0].set(false);
 
         while (isOperatorControl() && isEnabled()) {
-            vision_coord = Network.NetIn();
-            coordinates = Vision.average(Double.parseDouble(vision_coord[0]), Double.parseDouble(vision_coord[1]));
-            
-            
-            if (Math.abs(leftStick.getAxis(Joystick.AxisType.kX)) > 0.15)   {   //drive
+            //vision_coord = Network.NetIn();
+            //coordinates = Vision.average(Double.parseDouble(vision_coord[0]), Double.parseDouble(vision_coord[1]));
+            if (modeIndex == 0) {
+            modes[4].set(false);
+            modes[0].set(true);
+            modes[1].set(false);
+            modes[2].set(false);
+            modes[3].set(false);}
+            else if (modeIndex == 1) {
+                modes[4].set(false);
+                modes[0].set(false);
+                modes[1].set(true);
+                modes[2].set(false);
+                modes[3].set(false);
+            }
+            else if (modeIndex == 2) {
+                modes[4].set(false);
+                modes[0].set(false);
+                modes[1].set(false);
+                modes[2].set(true);
+                modes[3].set(false);
+            }
+            else if (modeIndex ==3) {
+                modes[4].set(false);
+                modes[0].set(false);
+                modes[1].set(false);
+                modes[2].set(false);
+                modes[3].set(true);
+            }
+            else if (modeIndex == 4) {
+                modes[4].set(true);
+                modes[0].set(false);
+                modes[1].set(false);
+                modes[2].set(false);
+                modes[3].set(false);
+            }
+            else if (modeIndex > 4) {
+                modeIndex = 0;
+            }
+            if (Math.abs(leftStick.getAxis(Joystick.AxisType.kX)) > 0.15)   {        
                 drive.arcadeDrive(leftStick);}
             else if (Math.abs(leftStick.getAxis(Joystick.AxisType.kY)) > 0.15) {
                 drive.arcadeDrive(leftStick);}
@@ -96,29 +111,29 @@ public class RobotTemplate extends SimpleRobot {
                 drive.arcadeDrive(0,0);}
             
                                    
-/*left*/    if (leftStick.getRawButton(6)) {                                    //supershifters
-                modeShift = 1;}
+/*left*/    if (leftStick.getRawButton(6)) {
+                shifted = true;}
             else if (leftStick.getRawButton(7)) {
-                modeShift = 0;}
+                shifted = false;}
             
             
-            else if (leftStick.getRawButton(2)) {                               //intake arm
-                modeArm = 1;
+            else if (leftStick.getRawButton(2)) {
+                intakeDown = false;
             }
             else if (leftStick.getRawButton(3)){
-                modeArm = 0;
+                intakeDown = true;
             }
             
-            if (leftStick.getRawButton(4)) {                                    //printing coordinates and encoder val
+            if (leftStick.getRawButton(4)) {
                 System.out.println(winchEncoder.get() + " " + coordinates[0] + " " + coordinates[1]);
             }
             
-            if (leftStick.getTrigger()) {                                       //cycling LED modes
-                modeIndex++;
+            if (leftStick.getTrigger()) {
+               modeIndex++;
             }
             
             
-/*right*/   if (rightStick.getRawButton(7)) {                                   //intake
+/*right*/   if (rightStick.getRawButton(7)) {
                 intake = 1;
             }
             else if (rightStick.getRawButton(6)) {
@@ -127,43 +142,62 @@ public class RobotTemplate extends SimpleRobot {
                 intake = 0;
             }
 
-            if (rightStick.getRawButton(3) && lim_switch.get() == true) {       //winch
+            if (rightStick.getRawButton(3) && lim_switch.get() == true) {
                 wench.set(-.7);
             }
             else if (lim_switch.get() == false && rightStick.getRawButton(3)) {
                 winchEncoder.reset();
-                modeFire = 0;
+                
+                lock_1.set(false);
+                lock_2.set(true);
             }
             else if (lim_switch.get() == false && winchEncoder.get() < 550) {
                 pressed = true;
-                modeFire = 0;
-                wench.set(.7);
+                lock_1.set(false);
+                lock_2.set(true);
+                //wench.set(.7);
             }
             else if (rightStick.getTrigger()) {
                 pressed = false;
-                modeFire = 1;
+                lock_1.set(true);
+                lock_2.set(false);
                 wench.set(rightStick.getAxis(Joystick.AxisType.kY));
             }
-            else if (pressed && winchEncoder.get() > 550) {
-                modeFire = 0;
+            else if (pressed && winchEncoder.get() >= 550) {
+                lock_1.set(false);
+                lock_2.set(true);
                 wench.set(0);
             }
             else  if (pressed == false) {
                 wench.set(rightStick.getAxis(Joystick.AxisType.kY));
-                modeFire = 1;
+                lock_1.set(true);
+                lock_2.set(false);
             }
             
-            if (rightStick.getRawButton(4)) {                                   //print winch encoder
+            if (rightStick.getRawButton(4)) {
                 System.out.println(winchEncoder.get());
             }
             
-/*---------------------------------------------------------------------------*/
-
+/*intake-m*/
             SetIntakeMotor(intake);
-            SetIntakeArm(modeArm);
-            Shift(modeShift);
-            LedMode(modeIndex);
-            Fire(modeFire);
+            
+/*intake-down*/
+            if (intakeDown) {
+                intake_1.set(true);
+                intake_2.set(false);
+            }
+            else {
+                intake_1.set(false);
+                intake_2.set(true);
+            }
+/*shifters*/if (shifted) {
+                shift_1.set(true);
+                shift_2.set(false);}
+            else {
+                shift_1.set(false);
+                shift_2.set(true);}
+
+            
             Timer.delay(.01);
             
         }
@@ -188,80 +222,7 @@ public class RobotTemplate extends SimpleRobot {
             intakeMotor.set(-1);
         }
     }
-    private void AutoTarget(boolean leftRight) {
-        /* false = left
-         * true  = right
-         */
-        if (leftRight == false) { //target lit up on left
-            while (drive_1.get() < 900) {
-                drive.arcadeDrive(0, -.3);
-            }
-            drive.arcadeDrive(0,0);
-        }
-        else if (leftRight = true) { //target lit up on right
-            while (drive_2.get() < 900) {
-                drive.arcadeDrive(0, .3);
-            }
-        }
-    }
-    private void Fire(int state) {
-        /* 0 = unlatch 
-           1 = latch   */
-        if (state == 0) {
-            lock_1.set(false);
-            lock_2.set(true);
-        }
-        else if (state == 1) {
-            lock_1.set(true);
-            lock_2.set(false);
-        }        
-    }
-    private void LedMode(int index) {
-        /* 0 = yellow
-         * 1 = blue
-         * 2 = red
-         * 3 = 'murica
-         * 4 = groovy
-         */
-        if (index > 4) {        
-            modeIndex = 0;
-        }
-        for (int i = 0; i < modes.length - 1; i ++) { 
-            if (i == index)
-                modes[i].set(true);
-            else
-                modes[i].set(false);
-             }
-    }
-    private void Shift(int state) {
-        /* 0 = not shifted
-         * 1 = shifted
-         */
-        if (state == 0) {
-            shift_1.set(false);
-            shift_2.set(true);
-        }
-        else if (state == 1) {
-            shift_1.set(true);
-            shift_2.set(false);
-        }
-    }
-    private void SetIntakeArm(int state) {
-        /* 0 = down
-         * 1 = up
-         */
-        if (state == 0) {
-            intake_1.set(true);
-            intake_2.set(false);
-        }
-        else if (state == 1) {
-            intake_1.set(false);
-            intake_2.set(true);
-        }
-    }
-    
     public void test() {
     
     }
-    
 }
