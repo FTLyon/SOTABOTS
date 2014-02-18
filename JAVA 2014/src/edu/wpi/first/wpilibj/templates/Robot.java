@@ -1,6 +1,5 @@
 package edu.wpi.first.wpilibj.templates;
 
-import edu.wpi.first.wpilibj.AnalogChannel;
 import edu.wpi.first.wpilibj.Compressor;
 import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj.DigitalOutput;
@@ -11,11 +10,10 @@ import edu.wpi.first.wpilibj.SimpleRobot;
 import edu.wpi.first.wpilibj.Solenoid;
 import edu.wpi.first.wpilibj.Talon;
 import edu.wpi.first.wpilibj.Timer;
-import edu.wpi.first.wpilibj.SafePWM;
 
 
 
-public class RobotTemplate extends SimpleRobot {
+public class Robot extends SimpleRobot {
     Joystick   leftStick            = new Joystick(1);
     Joystick   rightStick           = new Joystick(2);
     RobotDrive drive                = new RobotDrive(1,2);
@@ -37,6 +35,7 @@ public class RobotTemplate extends SimpleRobot {
     DigitalOutput mode_3            = new DigitalOutput(10);  
     DigitalOutput mode_4            = new DigitalOutput(11);
     DigitalOutput mode_5            = new DigitalOutput(12);
+    
     
     DigitalOutput[] modes           = new DigitalOutput[] {mode_1,mode_2,mode_3, mode_4, mode_5};
     
@@ -62,7 +61,7 @@ public class RobotTemplate extends SimpleRobot {
         winchEncoder.start();
 
         while (isOperatorControl() && isEnabled()) {
-            //Network.NetIn();
+            Network.NetIn();
             
             if (modeIndex == 0) {
             modes[4].set(false);

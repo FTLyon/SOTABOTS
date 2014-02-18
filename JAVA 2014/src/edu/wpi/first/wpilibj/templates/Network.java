@@ -25,7 +25,7 @@ public class Network {
             InputStream is = sc.openInputStream();
             BufferedReader in = new BufferedReader(new InputStreamReader(is));
             xy = Split(in.readLine().toString(), " ");
-            //System.out.println(xy);
+            System.out.println(xy);
             Timer.delay(.01);
         } catch (IOException ex) {
             System.out.println("Recieve data failed.");
