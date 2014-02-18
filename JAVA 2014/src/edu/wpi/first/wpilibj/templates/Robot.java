@@ -1,5 +1,6 @@
 package edu.wpi.first.wpilibj.templates;
 
+import edu.wpi.first.wpilibj.AnalogChannel;
 import edu.wpi.first.wpilibj.Compressor;
 import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj.DigitalOutput;
@@ -10,6 +11,7 @@ import edu.wpi.first.wpilibj.SimpleRobot;
 import edu.wpi .first.wpilibj.Solenoid;
 import edu.wpi.first.wpilibj.Talon;
 import edu.wpi.first.wpilibj.Timer;
+import edu.wpi.first.wpilibj.SafePWM;
 
 
 
@@ -39,6 +41,7 @@ public class RobotTemplate extends SimpleRobot {
     DigitalOutput[] modes           = new DigitalOutput[] {mode_1,mode_2,mode_3, mode_4, mode_5};
     
     boolean    intakeDown           = true;
+    int        intake               = 0;
     boolean    shifted              = false;
     boolean    shoot_1              = false;
     boolean    shoot_2              = false;
@@ -49,11 +52,6 @@ public class RobotTemplate extends SimpleRobot {
     double     driveRight           = 0;
     
     int        modeIndex            = 0;
-    int        intake               = 0;
-    
-    String[]   vision_coord         = null;
-    double[]   coordinates          = null;
-
 
     public void autonomous() {
         //mode_1.set(true);
@@ -64,8 +62,8 @@ public class RobotTemplate extends SimpleRobot {
         winchEncoder.start();
 
         while (isOperatorControl() && isEnabled()) {
-            //vision_coord = Network.NetIn();
-            //coordinates = Vision.average(Double.parseDouble(vision_coord[0]), Double.parseDouble(vision_coord[1]));
+            //Network.NetIn();
+            
             if (modeIndex == 0) {
             modes[4].set(false);
             modes[0].set(true);
@@ -103,6 +101,8 @@ public class RobotTemplate extends SimpleRobot {
             else if (modeIndex > 4) {
                 modeIndex = 0;
             }
+
+            
             if (Math.abs(leftStick.getAxis(Joystick.AxisType.kX)) > 0.15)   {        
                 drive.arcadeDrive(leftStick);}
             else if (Math.abs(leftStick.getAxis(Joystick.AxisType.kY)) > 0.15) {
@@ -125,11 +125,11 @@ public class RobotTemplate extends SimpleRobot {
             }
             
             if (leftStick.getRawButton(4)) {
-                System.out.println(winchEncoder.get() + " " + coordinates[0] + " " + coordinates[1]);
+                System.out.println(winchEncoder.get());
             }
             
             if (leftStick.getTrigger()) {
-               modeIndex++;
+                modeIndex ++;
             }
             
             if(leftStick.getRawButton(8)) {
@@ -139,6 +139,10 @@ public class RobotTemplate extends SimpleRobot {
                 modeIndex = 2;
             }
             
+/*auto vision*/            
+            if (leftStick.getRawButton(8) && leftStick.getRawButton(9)) {
+                //target code here, pull from Vision class
+            }
             
 /*right*/   if (rightStick.getRawButton(7)) {
                 intake = 1;
@@ -162,7 +166,7 @@ public class RobotTemplate extends SimpleRobot {
                 pressed = true;
                 lock_1.set(false);
                 lock_2.set(true);
-                //wench.set(.7);
+                wench.set(.7);
             }
             else if (rightStick.getTrigger()) {
                 pressed = false;
@@ -219,12 +223,10 @@ public class RobotTemplate extends SimpleRobot {
         if(status == 0)
         {
             intakeMotor.stopMotor();
-        } 
-        else if(status == 1)
+        } else if(status == 1)
         {
             intakeMotor.set(1);
-        } 
-        else if(status == 2)
+        } else if(status == 2)
         {
             intakeMotor.set(-1);
         }
@@ -232,5 +234,4 @@ public class RobotTemplate extends SimpleRobot {
     public void test() {
     
     }
-    
 }
