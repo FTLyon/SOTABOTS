@@ -51,9 +51,40 @@ public class Robot extends SimpleRobot {
     double     driveRight           = 0;
     
     int        modeIndex            = 0;
+    
+    double[]   coordinates          = null;
+    String[]   vision_coord         = null;
 
     public void autonomous() {
-        //mode_1.set(true);
+//        mode_1.set(true);
+//        compressor.start();
+//        Fire(0);
+//        
+//        modes[0].set(true); //yellow mode (1) for auto
+//        
+//        drive_1.start(); //enable and reset encoders for auto mode or something
+//        drive_2.start();
+//        winchEncoder.start();
+//        drive_1.reset();
+//        drive_2.reset();
+//        winchEncoder.reset();
+//        
+//        vision_coord = Network.NetIn();             //call and parse coordinates for targeting
+//        autoTarget_1 = Vision.average(Double.parseDouble(vision_coord[0]), Double.parseDouble(vision_coord[1]));
+//        autoTarget_2 = Vision.average(Double.parseDouble(vision_coord[2]), Double.parseDouble(vision_coord[3]));
+//            
+//        leftRight = Vision.leftRight(autoTarget_1,autoTarget_2); //determine whether the target is on the L/R
+//        System.out.println(leftRight);
+//            
+//        AutoTarget(leftRight);              //runs targeting method
+//        Timer.delay(1);                     //wait 1s
+//        Fire(1);                            //fires
+//        drive_1.reset();                    //resets drive encoder
+//        while (drive_1.get() < 1000) {
+//          drive.arcadeDrive(.5,0);          //drive forward for 1000 encoder counts
+//            }
+//        drive.arcadeDrive(0,0);             //stop
+//        Fire(0);                            //unlatch
     }
 
     public void operatorControl() {
@@ -61,7 +92,13 @@ public class Robot extends SimpleRobot {
         winchEncoder.start();
 
         while (isOperatorControl() && isEnabled()) {
-            Network.NetIn();
+            try {
+            vision_coord = Network.NetIn();
+            coordinates  = Vision.average(Double.parseDouble(vision_coord[0]), Double.parseDouble(vision_coord[1]));
+            System.out.println(coordinates[0] + " " + coordinates[1]);}
+            catch (Exception e) {
+                System.out.println("Pi connection issue or something.");
+            }
             
             if (modeIndex == 0) {
             modes[4].set(false);
