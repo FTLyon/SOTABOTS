@@ -132,6 +132,13 @@ public class RobotTemplate extends SimpleRobot {
                modeIndex++;
             }
             
+            if(leftStick.getRawButton(8)) {
+                modeIndex = 1;
+            }
+            if (leftStick.getRawButton(9)) {
+                modeIndex = 2;
+            }
+            
             
 /*right*/   if (rightStick.getRawButton(7)) {
                 intake = 1;
@@ -225,4 +232,5 @@ public class RobotTemplate extends SimpleRobot {
     public void test() {
     
     }
+    
 }
