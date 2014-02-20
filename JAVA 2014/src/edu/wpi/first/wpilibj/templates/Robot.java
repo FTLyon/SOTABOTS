@@ -1,21 +1,10 @@
 package edu.wpi.first.wpilibj.templates;
 
-import edu.wpi.first.wpilibj.AnalogChannel;
-import edu.wpi.first.wpilibj.Compressor;
-import edu.wpi.first.wpilibj.DigitalInput;
-import edu.wpi.first.wpilibj.DigitalOutput;
-import edu.wpi.first.wpilibj.Encoder;
-import edu.wpi.first.wpilibj.Joystick;
-import edu.wpi.first.wpilibj.RobotDrive;
-import edu.wpi.first.wpilibj.SimpleRobot;
-import edu.wpi .first.wpilibj.Solenoid;
-import edu.wpi.first.wpilibj.Talon;
-import edu.wpi.first.wpilibj.Timer;
-import edu.wpi.first.wpilibj.SafePWM;
+import edu.wpi.first.wpilibj.*;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
 
-
-public class RobotTemplate extends SimpleRobot {
+public class Robot extends SimpleRobot {
     Joystick   leftStick            = new Joystick(1);
     Joystick   rightStick           = new Joystick(2);
     RobotDrive drive                = new RobotDrive(1,2);
@@ -37,6 +26,7 @@ public class RobotTemplate extends SimpleRobot {
     DigitalOutput mode_3            = new DigitalOutput(10);  
     DigitalOutput mode_4            = new DigitalOutput(11);
     DigitalOutput mode_5            = new DigitalOutput(12);
+    SmartDashboard dash             = new SmartDashboard();
     
     DigitalOutput[] modes           = new DigitalOutput[] {mode_1,mode_2,mode_3, mode_4, mode_5};
     
@@ -56,18 +46,25 @@ public class RobotTemplate extends SimpleRobot {
     int        modeIndex            = 0;
     
     int        cycle                = 0;
+    
+    double[]   coordinates          = null;
+    String[]   vision_coord         = null;
 
     public void autonomous() {
-        //mode_1.set(true);
+        
     }
 
     public void operatorControl() {
         compressor.start();
         winchEncoder.start();
         wench.set(0);
+        
 
         while (isOperatorControl() && isEnabled()) {
-                        
+            SmartDashboard.putNumber("WINCH", winchEncoder.get());
+            SmartDashboard.putBoolean("LOCK", pressed);
+            SmartDashboard.putNumber("LED MODE", modeIndex);
+            
             if (modeIndex == 0) {
                 modes[4].set(false);
                 modes[0].set(true);
@@ -167,7 +164,7 @@ public class RobotTemplate extends SimpleRobot {
                 lock_1.set(false);
                 lock_2.set(true);
             }
-            else if (lim_switch.get() == false && winchEncoder.get() < 550 && winding) {
+            else if (lim_switch.get() == false && winchEncoder.get() < 550 && winding) { //put back to 550 for competition bot!
                 pressed = true;
                 lock_1.set(false);
                 lock_2.set(true);
@@ -179,11 +176,11 @@ public class RobotTemplate extends SimpleRobot {
                 lock_2.set(false);
                 wench.set(rightStick.getAxis(Joystick.AxisType.kY));
             }
-            else if (pressed && winchEncoder.get() >= 550) {
+            else if (pressed && winchEncoder.get() >= 550) { //put back to 550 for competition bot!
                 lock_1.set(false);
                 lock_2.set(true);
                 winding = false;
-                wench.set(0);
+                wench.stopMotor();
             }
             else  if (pressed == false) {
                 wench.set(rightStick.getAxis(Joystick.AxisType.kY));
@@ -200,12 +197,12 @@ public class RobotTemplate extends SimpleRobot {
             
 /*intake-down*/
             if (intakeDown) {
-                intake_1.set(true);
-                intake_2.set(false);
+                intake_1.set(false); //SWITCH FOR COMPETITION BOT!
+                intake_2.set(true);
             }
             else {
-                intake_1.set(false);
-                intake_2.set(true);
+                intake_1.set(true);
+                intake_2.set(false);
             }
 /*shifters*/if (shifted) {
                 shift_1.set(true);
@@ -242,6 +239,7 @@ public class RobotTemplate extends SimpleRobot {
             intakeMotor.set(-1);
         }
     }
+    
     public void test() {
     
     }
