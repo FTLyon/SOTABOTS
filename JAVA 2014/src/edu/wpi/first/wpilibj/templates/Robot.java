@@ -1,5 +1,6 @@
 package edu.wpi.first.wpilibj.templates;
 
+import edu.wpi.first.wpilibj.AnalogChannel;
 import edu.wpi.first.wpilibj.Compressor;
 import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj.DigitalOutput;
@@ -7,13 +8,14 @@ import edu.wpi.first.wpilibj.Encoder;
 import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj.RobotDrive;
 import edu.wpi.first.wpilibj.SimpleRobot;
-import edu.wpi.first.wpilibj.Solenoid;
+import edu.wpi .first.wpilibj.Solenoid;
 import edu.wpi.first.wpilibj.Talon;
 import edu.wpi.first.wpilibj.Timer;
+import edu.wpi.first.wpilibj.SafePWM;
 
 
 
-public class Robot extends SimpleRobot {
+public class RobotTemplate extends SimpleRobot {
     Joystick   leftStick            = new Joystick(1);
     Joystick   rightStick           = new Joystick(2);
     RobotDrive drive                = new RobotDrive(1,2);
@@ -36,7 +38,6 @@ public class Robot extends SimpleRobot {
     DigitalOutput mode_4            = new DigitalOutput(11);
     DigitalOutput mode_5            = new DigitalOutput(12);
     
-    
     DigitalOutput[] modes           = new DigitalOutput[] {mode_1,mode_2,mode_3, mode_4, mode_5};
     
     boolean    intakeDown           = true;
@@ -46,66 +47,33 @@ public class Robot extends SimpleRobot {
     boolean    shoot_2              = false;
     boolean    shoot_3              = false;
     boolean    pressed              = false;
+    boolean    winding              = false;
+    boolean    killme               = false;
     
     double     driveLeft            = 0;
     double     driveRight           = 0;
     
     int        modeIndex            = 0;
     
-    double[]   coordinates          = null;
-    String[]   vision_coord         = null;
+    int        cycle                = 0;
 
     public void autonomous() {
-//        mode_1.set(true);
-//        compressor.start();
-//        Fire(0);
-//        
-//        modes[0].set(true); //yellow mode (1) for auto
-//        
-//        drive_1.start(); //enable and reset encoders for auto mode or something
-//        drive_2.start();
-//        winchEncoder.start();
-//        drive_1.reset();
-//        drive_2.reset();
-//        winchEncoder.reset();
-//        
-//        vision_coord = Network.NetIn();             //call and parse coordinates for targeting
-//        autoTarget_1 = Vision.average(Double.parseDouble(vision_coord[0]), Double.parseDouble(vision_coord[1]));
-//        autoTarget_2 = Vision.average(Double.parseDouble(vision_coord[2]), Double.parseDouble(vision_coord[3]));
-//            
-//        leftRight = Vision.leftRight(autoTarget_1,autoTarget_2); //determine whether the target is on the L/R
-//        System.out.println(leftRight);
-//            
-//        AutoTarget(leftRight);              //runs targeting method
-//        Timer.delay(1);                     //wait 1s
-//        Fire(1);                            //fires
-//        drive_1.reset();                    //resets drive encoder
-//        while (drive_1.get() < 1000) {
-//          drive.arcadeDrive(.5,0);          //drive forward for 1000 encoder counts
-//            }
-//        drive.arcadeDrive(0,0);             //stop
-//        Fire(0);                            //unlatch
+        //mode_1.set(true);
     }
 
     public void operatorControl() {
         compressor.start();
         winchEncoder.start();
+        wench.set(0);
 
         while (isOperatorControl() && isEnabled()) {
-            try {
-            vision_coord = Network.NetIn();
-            coordinates  = Vision.average(Double.parseDouble(vision_coord[0]), Double.parseDouble(vision_coord[1]));
-            System.out.println(coordinates[0] + " " + coordinates[1]);}
-            catch (Exception e) {
-                System.out.println("Pi connection issue or something.");
-            }
-            
+                        
             if (modeIndex == 0) {
-            modes[4].set(false);
-            modes[0].set(true);
-            modes[1].set(false);
-            modes[2].set(false);
-            modes[3].set(false);}
+                modes[4].set(false);
+                modes[0].set(true);
+                modes[1].set(false);
+                modes[2].set(false);
+                modes[3].set(false);}
             else if (modeIndex == 1) {
                 modes[4].set(false);
                 modes[0].set(false);
@@ -189,16 +157,17 @@ public class Robot extends SimpleRobot {
                 intake = 0;
             }
 
-            if (rightStick.getRawButton(3) && lim_switch.get() == true) {
+            if (rightStick.getRawButton(3) && lim_switch.get() == true && pressed == false) {
                 wench.set(-.7);
+                winchEncoder.reset();
             }
             else if (lim_switch.get() == false && rightStick.getRawButton(3)) {
-                winchEncoder.reset();
-                
+                //winchEncoder.reset();
+                winding = true;
                 lock_1.set(false);
                 lock_2.set(true);
             }
-            else if (lim_switch.get() == false && winchEncoder.get() < 550) {
+            else if (lim_switch.get() == false && winchEncoder.get() < 550 && winding) {
                 pressed = true;
                 lock_1.set(false);
                 lock_2.set(true);
@@ -213,6 +182,7 @@ public class Robot extends SimpleRobot {
             else if (pressed && winchEncoder.get() >= 550) {
                 lock_1.set(false);
                 lock_2.set(true);
+                winding = false;
                 wench.set(0);
             }
             else  if (pressed == false) {
@@ -239,7 +209,8 @@ public class Robot extends SimpleRobot {
             }
 /*shifters*/if (shifted) {
                 shift_1.set(true);
-                shift_2.set(false);}
+                shift_2.set(false);
+            }
             else {
                 shift_1.set(false);
                 shift_2.set(true);}
@@ -259,10 +230,14 @@ public class Robot extends SimpleRobot {
         if(status == 0)
         {
             intakeMotor.stopMotor();
-        } else if(status == 1)
+        } 
+        
+        else if(status == 1)
         {
             intakeMotor.set(1);
-        } else if(status == 2)
+        } 
+        
+        else if(status == 2)
         {
             intakeMotor.set(-1);
         }
