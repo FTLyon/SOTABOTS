@@ -1,11 +1,16 @@
 package edu.wpi.first.wpilibj.templates;
 
-import edu.wpi.first.wpilibj.Talon;
+import com.sun.squawk.io.BufferedReader;
 import edu.wpi.first.wpilibj.*;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import javax.microedition.io.Connector;
+import javax.microedition.io.SocketConnection;
 
 
-public class RobotTemplate extends SimpleRobot {
+public class Robot extends SimpleRobot {
     Joystick   leftStick            = new Joystick(1);
     Joystick   rightStick           = new Joystick(2);
     RobotDrive drive                = new RobotDrive(1,2);
@@ -28,6 +33,7 @@ public class RobotTemplate extends SimpleRobot {
     DigitalOutput mode_4            = new DigitalOutput(11);
     DigitalOutput mode_5            = new DigitalOutput(12);
     SmartDashboard dash             = new SmartDashboard();
+    Timer         time_1            = new Timer();
     
     DigitalOutput[] modes           = new DigitalOutput[] {mode_1,mode_2,mode_3, mode_4, mode_5};
     
@@ -51,8 +57,19 @@ public class RobotTemplate extends SimpleRobot {
     double[]   coordinates          = null;
     String[]   vision_coord         = null;
 
-    public void autonomous() {
         
+    public void autonomous() {
+        compressor.start();
+        winchEncoder.start();
+        wench.set(0);
+        lock_1.set(false);
+        lock_2.set(true);
+        drive.setSafetyEnabled(false);
+        time_1.start();
+        while (time_1.get() < 10) {
+            SmartDashboard.putString("NET 1", (Network.NetIn()[0] + " " + Network.NetIn()[1]));
+        }
+            
     }
 
     public void operatorControl() {
@@ -159,7 +176,7 @@ public class RobotTemplate extends SimpleRobot {
                 wench.set(-.8);
                 winchEncoder.reset();
             }
-            else if (lim_switch.get() == false && rightStick.getRawButton(3)) {
+            else if (lim_switch.get() == false && rightStick.getRawButton(2)) {
                 //winchEncoder.reset();
                 winding = true;
                 lock_1.set(false);
@@ -197,10 +214,21 @@ public class RobotTemplate extends SimpleRobot {
             SetIntakeMotor(intake);
             
 /*intake-down*/
-            SetIntakeDown();           
-           
-/*shifters*/
-            SetShifters();
+            if (intakeDown) {
+                intake_1.set(false); //SWITCH FOR COMPETITION BOT!
+                intake_2.set(true);
+            }
+            else {
+                intake_1.set(true);
+                intake_2.set(false);
+            }
+/*shifters*/if (shifted) {
+                shift_1.set(true);
+                shift_2.set(false);
+            }
+            else {
+                shift_1.set(false);
+                shift_2.set(true);}
 
             
             Timer.delay(.01);
@@ -230,32 +258,8 @@ public class RobotTemplate extends SimpleRobot {
         }
     }
     
-    private void SetIntakeDown()
-    {
-      if (intakeDown) {
-        intake_1.set(false); //SWITCH FOR COMPETITION BOT!
-        intake_2.set(true);
-        }
-        else {
-            intake_1.set(true);
-            intake_2.set(false);
-        }   
-    }
-    
-    private void SetShifters()
-    {
-    if (shifted) {
-        shift_1.set(true);
-        shift_2.set(false);
-        }
-        else {
-            shift_1.set(false);
-            shift_2.set(true);
-        }    
-    }
-    
-    
     public void test() {
     
     }
+    
 }
