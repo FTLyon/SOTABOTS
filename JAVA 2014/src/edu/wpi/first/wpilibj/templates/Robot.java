@@ -1,10 +1,11 @@
 package edu.wpi.first.wpilibj.templates;
 
+import edu.wpi.first.wpilibj.Talon;
 import edu.wpi.first.wpilibj.*;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
 
-public class Robot extends SimpleRobot {
+public class RobotTemplate extends SimpleRobot {
     Joystick   leftStick            = new Joystick(1);
     Joystick   rightStick           = new Joystick(2);
     RobotDrive drive                = new RobotDrive(1,2);
@@ -196,21 +197,10 @@ public class Robot extends SimpleRobot {
             SetIntakeMotor(intake);
             
 /*intake-down*/
-            if (intakeDown) {
-                intake_1.set(false); //SWITCH FOR COMPETITION BOT!
-                intake_2.set(true);
-            }
-            else {
-                intake_1.set(true);
-                intake_2.set(false);
-            }
-/*shifters*/if (shifted) {
-                shift_1.set(true);
-                shift_2.set(false);
-            }
-            else {
-                shift_1.set(false);
-                shift_2.set(true);}
+            SetIntakeDown();           
+           
+/*shifters*/
+            SetShifters();
 
             
             Timer.delay(.01);
@@ -239,6 +229,31 @@ public class Robot extends SimpleRobot {
             intakeMotor.set(-1);
         }
     }
+    
+    private void SetIntakeDown()
+    {
+      if (intakeDown) {
+        intake_1.set(false); //SWITCH FOR COMPETITION BOT!
+        intake_2.set(true);
+        }
+        else {
+            intake_1.set(true);
+            intake_2.set(false);
+        }   
+    }
+    
+    private void SetShifters()
+    {
+    if (shifted) {
+        shift_1.set(true);
+        shift_2.set(false);
+        }
+        else {
+            shift_1.set(false);
+            shift_2.set(true);
+        }    
+    }
+    
     
     public void test() {
     
