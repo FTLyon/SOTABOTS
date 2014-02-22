@@ -112,20 +112,20 @@ public class Robot extends SimpleRobot {
                 drive.arcadeDrive(0,0);}
             
                                    
-/*left*/    if (leftStick.getRawButton(6)) {
+/*left*/    if (leftStick.getRawButton(3)) {
                 shifted = true;}
-            else if (leftStick.getRawButton(7)) {
+            else if (leftStick.getRawButton(4)) {
                 shifted = false;}
             
             
-            else if (leftStick.getRawButton(2)) {
+            else if (leftStick.getRawButton(5)) {
                 intakeDown = false;
             }
-            else if (leftStick.getRawButton(3)){
+            else if (leftStick.getRawButton(6)){
                 intakeDown = true;
             }
             
-            if (leftStick.getRawButton(4)) {
+            if (leftStick.getRawButton(12)) {
                 System.out.println(winchEncoder.get());
             }
             
@@ -133,29 +133,29 @@ public class Robot extends SimpleRobot {
                 modeIndex ++;
             }
             
-            if(leftStick.getRawButton(8)) {
+            if(leftStick.getRawButton(7)) {
                 modeIndex = 1;
             }
-            if (leftStick.getRawButton(9)) {
+            if (leftStick.getRawButton(8)) {
                 modeIndex = 2;
             }
             
 /*auto vision*/            
-            if (leftStick.getRawButton(8) && leftStick.getRawButton(9)) {
+            if (leftStick.getRawButton(9) && leftStick.getRawButton(10)) {
                 //target code here, pull from Vision class
             }
             
-/*right*/   if (rightStick.getRawButton(7)) {
+/*right*/   if (rightStick.getRawButton(3)) {
                 intake = 1;
             }
-            else if (rightStick.getRawButton(6)) {
+            else if (rightStick.getRawButton(4)) {
                 intake = 2;
             } else {
                 intake = 0;
             }
 
-            if (rightStick.getRawButton(3) && lim_switch.get() == true && pressed == false) {
-                wench.set(-.7);
+            if (rightStick.getRawButton(2) && lim_switch.get() == true && pressed == false) {
+                wench.set(-.8);
                 winchEncoder.reset();
             }
             else if (lim_switch.get() == false && rightStick.getRawButton(3)) {
@@ -168,7 +168,7 @@ public class Robot extends SimpleRobot {
                 pressed = true;
                 lock_1.set(false);
                 lock_2.set(true);
-                wench.set(.7);
+                wench.set(.8);
             }
             else if (rightStick.getTrigger()) {
                 pressed = false;
@@ -188,7 +188,7 @@ public class Robot extends SimpleRobot {
                 lock_2.set(false);
             }
             
-            if (rightStick.getRawButton(4)) {
+            if (rightStick.getRawButton(5)) {
                 System.out.println(winchEncoder.get());
             }
             
