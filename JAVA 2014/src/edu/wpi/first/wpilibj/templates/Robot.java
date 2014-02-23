@@ -1,16 +1,11 @@
 package edu.wpi.first.wpilibj.templates;
 
-import com.sun.squawk.io.BufferedReader;
+import edu.wpi.first.wpilibj.Talon;
 import edu.wpi.first.wpilibj.*;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
-import javax.microedition.io.Connector;
-import javax.microedition.io.SocketConnection;
 
 
-public class Robot extends SimpleRobot {
+public class RobotTemplate extends SimpleRobot {
     Joystick   leftStick            = new Joystick(1);
     Joystick   rightStick           = new Joystick(2);
     RobotDrive drive                = new RobotDrive(1,2);
@@ -33,7 +28,6 @@ public class Robot extends SimpleRobot {
     DigitalOutput mode_4            = new DigitalOutput(11);
     DigitalOutput mode_5            = new DigitalOutput(12);
     SmartDashboard dash             = new SmartDashboard();
-    Timer         time_1            = new Timer();
     
     DigitalOutput[] modes           = new DigitalOutput[] {mode_1,mode_2,mode_3, mode_4, mode_5};
     
@@ -57,19 +51,8 @@ public class Robot extends SimpleRobot {
     double[]   coordinates          = null;
     String[]   vision_coord         = null;
 
-        
     public void autonomous() {
-        compressor.start();
-        winchEncoder.start();
-        wench.set(0);
-        lock_1.set(false);
-        lock_2.set(true);
-        drive.setSafetyEnabled(false);
-        time_1.start();
-        while (time_1.get() < 10) {
-            SmartDashboard.putString("NET 1", (Network.NetIn()[0] + " " + Network.NetIn()[1]));
-        }
-            
+        
     }
 
     public void operatorControl() {
@@ -83,7 +66,76 @@ public class Robot extends SimpleRobot {
             SmartDashboard.putBoolean("LOCK", pressed);
             SmartDashboard.putNumber("LED MODE", modeIndex);
             
-            if (modeIndex == 0) {
+            SetLEDModes();
+
+            
+            SetDrive();
+            
+                                   
+/*left*/    if (leftStick.getRawButton(3)) {
+                shifted = true;}
+            else if (leftStick.getRawButton(4)) {
+                shifted = false;}
+            
+            
+            if (leftStick.getRawButton(5)) {
+                intakeDown = false;
+            }
+            else if (leftStick.getRawButton(6)){
+                intakeDown = true;
+            }
+            
+            if (leftStick.getRawButton(12)) {
+                System.out.println(winchEncoder.get());
+            }
+            
+            if (leftStick.getTrigger()) {
+                modeIndex ++;
+            }
+            
+            if(leftStick.getRawButton(7)) {
+                modeIndex = 1;
+            }
+            if (leftStick.getRawButton(8)) {
+                modeIndex = 2;
+            }
+
+/*auto vision*/            
+            SetAutoVision();
+            
+/*right*/   SetIntake();
+
+            SetWinch();
+            
+            SetWinchEncoder();
+            
+            
+/*intake-m*/
+            SetIntakeMotor(intake);
+            
+/*intake-down*/
+            SetIntakeDown();           
+           
+/*shifters*/
+            SetShifters();
+
+            
+            Timer.delay(.01);
+            
+        }
+    }
+    private void SetDrive()
+    {
+       if (Math.abs(leftStick.getAxis(Joystick.AxisType.kX)) > 0.15)   {        
+                drive.arcadeDrive(leftStick);}
+            else if (Math.abs(leftStick.getAxis(Joystick.AxisType.kY)) > 0.15) {
+                drive.arcadeDrive(leftStick);}
+            else{
+                drive.arcadeDrive(0,0);}    
+    }
+    private void SetLEDModes()
+    {
+     if (modeIndex == 0) {
                 modes[4].set(false);
                 modes[0].set(true);
                 modes[1].set(false);
@@ -119,64 +171,39 @@ public class Robot extends SimpleRobot {
             }
             else if (modeIndex > 4) {
                 modeIndex = 0;
-            }
-
-            
-            if (Math.abs(leftStick.getAxis(Joystick.AxisType.kX)) > 0.15)   {        
-                drive.arcadeDrive(leftStick);}
-            else if (Math.abs(leftStick.getAxis(Joystick.AxisType.kY)) > 0.15) {
-                drive.arcadeDrive(leftStick);}
-            else{
-                drive.arcadeDrive(0,0);}
-            
-                                   
-/*left*/    if (leftStick.getRawButton(3)) {
-                shifted = true;}
-            else if (leftStick.getRawButton(4)) {
-                shifted = false;}
-            
-            
-            else if (leftStick.getRawButton(5)) {
-                intakeDown = false;
-            }
-            else if (leftStick.getRawButton(6)){
-                intakeDown = true;
-            }
-            
-            if (leftStick.getRawButton(12)) {
-                System.out.println(winchEncoder.get());
-            }
-            
-            if (leftStick.getTrigger()) {
-                modeIndex ++;
-            }
-            
-            if(leftStick.getRawButton(7)) {
-                modeIndex = 1;
-            }
-            if (leftStick.getRawButton(8)) {
-                modeIndex = 2;
-            }
-            
-/*auto vision*/            
-            if (leftStick.getRawButton(9) && leftStick.getRawButton(10)) {
+            }   
+    }
+    private void SetAutoVision()
+    {
+     if (leftStick.getRawButton(9) && leftStick.getRawButton(10)) {
                 //target code here, pull from Vision class
-            }
-            
-/*right*/   if (rightStick.getRawButton(3)) {
-                intake = 1;
-            }
-            else if (rightStick.getRawButton(4)) {
-                intake = 2;
-            } else {
-                intake = 0;
-            }
-
-            if (rightStick.getRawButton(2) && lim_switch.get() == true && pressed == false) {
+        }   
+    }
+    private void SetIntake()
+    {
+    if (rightStick.getRawButton(3)) {
+        intake = 1;
+        }
+        else if (rightStick.getRawButton(4)) {
+            intake = 2;
+        } else {
+            intake = 0;
+        }    
+    }
+    private void SetWinchEncoder()
+    {
+     if (rightStick.getRawButton(5)) {
+        System.out.println(winchEncoder.get());
+        }   
+    }
+    
+    private void SetWinch()
+    {
+        if (rightStick.getRawButton(2) && lim_switch.get() == true && pressed == false) {
                 wench.set(-.8);
                 winchEncoder.reset();
             }
-            else if (lim_switch.get() == false && rightStick.getRawButton(2)) {
+            else if (lim_switch.get() == false && rightStick.getRawButton(3)) {
                 //winchEncoder.reset();
                 winding = true;
                 lock_1.set(false);
@@ -205,35 +232,6 @@ public class Robot extends SimpleRobot {
                 lock_1.set(true);
                 lock_2.set(false);
             }
-            
-            if (rightStick.getRawButton(5)) {
-                System.out.println(winchEncoder.get());
-            }
-            
-/*intake-m*/
-            SetIntakeMotor(intake);
-            
-/*intake-down*/
-            if (intakeDown) {
-                intake_1.set(false); //SWITCH FOR COMPETITION BOT!
-                intake_2.set(true);
-            }
-            else {
-                intake_1.set(true);
-                intake_2.set(false);
-            }
-/*shifters*/if (shifted) {
-                shift_1.set(true);
-                shift_2.set(false);
-            }
-            else {
-                shift_1.set(false);
-                shift_2.set(true);}
-
-            
-            Timer.delay(.01);
-            
-        }
     }
     
     private void SetIntakeMotor(int status)
@@ -258,8 +256,32 @@ public class Robot extends SimpleRobot {
         }
     }
     
+    private void SetIntakeDown()
+    {
+      if (intakeDown) {
+        intake_1.set(false); //SWITCH FOR COMPETITION BOT!
+        intake_2.set(true);
+        }
+        else {
+            intake_1.set(true);
+            intake_2.set(false);
+        }   
+    }
+    
+    private void SetShifters()
+    {
+    if (shifted) {
+        shift_1.set(true);
+        shift_2.set(false);
+        }
+        else {
+            shift_1.set(false);
+            shift_2.set(true);
+        }    
+    }
+    
+    
     public void test() {
     
     }
-    
-}
+} 
