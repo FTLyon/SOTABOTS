@@ -67,6 +67,8 @@ public class Robot extends SimpleRobot {
         lock_2.set(true);
         time_1.reset();
         time_1.start();
+        drive_1.reset();
+        drive_1.start();
         drive.setSafetyEnabled(false);
         drive.arcadeDrive(0,0);
         while (time_1.get() < 0.5) {
@@ -74,18 +76,22 @@ public class Robot extends SimpleRobot {
             lock_2.set(true);
             drive.arcadeDrive(0,0);
         }
-        while (time_1.get() < .95 && time_1.get() >= 0.5) {
+        while (drive_1.get() > -526) {
             drive.arcadeDrive(-1,0);
+            System.out.println(drive_1.get());
+            time_1.reset();
         }
-        while (time_1.get() < 1.3 && time_1.get() >= 0.95) {
+        while (time_1.get() < 1) {
             drive.arcadeDrive(0,0);
+            drive_1.reset();
         }
-        while (time_1.get() >= 1.3 && time_1.get() < 1.6) {
+        while (time_1.get() >= 1 && time_1.get() < 1.6) {
             lock_1.set(true);
             lock_2.set(false);
             drive.arcadeDrive(0,0);
+            drive_1.reset();
         }
-        while (time_1.get() >= 1.6 && time_1.get() < 2.) {
+        while (drive_1.get() > -526) {
             drive.arcadeDrive(-1,0);
         }
         drive.arcadeDrive(0,0);
