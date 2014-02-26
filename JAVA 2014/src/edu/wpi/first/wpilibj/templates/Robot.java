@@ -76,16 +76,16 @@ public class Robot extends SimpleRobot {
             lock_2.set(true);
             drive.arcadeDrive(0,0);
         }
-        while (drive_1.get() > -526) {
+        while (drive_1.get() > -670) {
             drive.arcadeDrive(-1,0);
             System.out.println(drive_1.get());
             time_1.reset();
         }
-        while (time_1.get() < 1) {
+        while (time_1.get() < 1.5) {
             drive.arcadeDrive(0,0);
             drive_1.reset();
         }
-        while (time_1.get() >= 1 && time_1.get() < 1.6) {
+        while (time_1.get() >= 1.5 && time_1.get() < 2) {
             lock_1.set(true);
             lock_2.set(false);
             drive.arcadeDrive(0,0);
@@ -211,7 +211,7 @@ public class Robot extends SimpleRobot {
                 lock_1.set(false);
                 lock_2.set(true);
             }
-            else if (lim_switch.get() == false && winchEncoder.get() < 550 && winding) { //put back to 550 for competition bot!
+            else if (lim_switch.get() == false && winchEncoder.get() < 530 && winding) { //put back to 550 for competition bot!
                 pressed = true;
                 lock_1.set(false);
                 lock_2.set(true);
@@ -223,7 +223,7 @@ public class Robot extends SimpleRobot {
                 lock_2.set(false);
                 wench.set(rightStick.getAxis(Joystick.AxisType.kY));
             }
-            else if (pressed && winchEncoder.get() >= 550) { //put back to 550 for competition bot!
+            else if (pressed && winchEncoder.get() >= 533) { //put back to 550 for competition bot!
                 lock_1.set(false);
                 lock_2.set(true);
                 winding = false;
@@ -236,20 +236,20 @@ public class Robot extends SimpleRobot {
             }
             
             if (rightStick.getRawButton(5)) {
-                System.out.println(winchEncoder.get());
-            }
+                System.out.println(winchEncoder.get()); 
+           }
             
 /*intake-m*/
             SetIntakeMotor(intake);
             
 /*intake-down*/
             if (intakeDown) {
-                intake_1.set(false); //SWITCH FOR COMPETITION BOT!
-                intake_2.set(true);
+                intake_1.set(true); //SWITCH FOR practice BOT!
+                intake_2.set(false);
             }
             else {
-                intake_1.set(true);
-                intake_2.set(false);
+                intake_1.set(false);
+                intake_2.set(true);
             }
 /*shifters*/if (shifted) {
                 shift_1.set(true);
