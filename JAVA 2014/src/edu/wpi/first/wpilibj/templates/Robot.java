@@ -61,6 +61,8 @@ public class Robot extends SimpleRobot {
     public void autonomous() {
         compressor.start();
         winchEncoder.start();
+        intake_1.set(true); //SWITCH FOR practice BOT!
+        intake_2.set(false);
         wench.set(0);
         intakeDown = true;
         lock_1.set(false);
