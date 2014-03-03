@@ -1,14 +1,7 @@
 package edu.wpi.first.wpilibj.templates;
 
-import com.sun.squawk.io.BufferedReader;
 import edu.wpi.first.wpilibj.*;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
-import javax.microedition.io.Connector;
-import javax.microedition.io.SocketConnection;
-
 
 public class Robot extends SimpleRobot {
     Joystick   leftStick            = new Joystick(1);
@@ -46,6 +39,7 @@ public class Robot extends SimpleRobot {
     boolean    pressed              = false;
     boolean    winding              = false;
     boolean    killme               = false;
+    String     latched              = "Unlatched";
     
     double     driveLeft            = 0;
     double     driveRight           = 0;
@@ -78,7 +72,7 @@ public class Robot extends SimpleRobot {
             lock_2.set(true);
             drive.arcadeDrive(0,0);
         }
-        while (drive_1.get() > -670) {
+        while (drive_1.get() > -3250) {
             drive.arcadeDrive(-1,0);
             System.out.println(drive_1.get());
             time_1.reset();
@@ -93,9 +87,9 @@ public class Robot extends SimpleRobot {
             drive.arcadeDrive(0,0);
             drive_1.reset();
         }
-        while (drive_1.get() > -526) {
-            drive.arcadeDrive(-1,0);
-        }
+        //while (drive_1.get() > -526) {
+          //  drive.arcadeDrive(-1,0);
+        //}
         drive.arcadeDrive(0,0);
             
     }
@@ -110,9 +104,10 @@ public class Robot extends SimpleRobot {
 
         while (isOperatorControl() && isEnabled()) {
             //System.out.println(Network.NetIn());
-            SmartDashboard.putNumber("WINCH", winchEncoder.get());
-            SmartDashboard.putBoolean("LOCK", pressed);
-            SmartDashboard.putNumber("LED MODE", modeIndex);
+            //SmartDashboard.putBoolean("LOCK", pressed);
+            SmartDashboard.putString("LOCK STATE: ",latched);
+            SmartDashboard.putNumber("WINCHE ENCODER: ", winchEncoder.get());
+            SmartDashboard.putNumber("LED MODE: ", modeIndex);
             
             if (modeIndex == 0) {
                 modes[4].set(false);
@@ -209,23 +204,25 @@ public class Robot extends SimpleRobot {
             }
             else if (lim_switch.get() == false && rightStick.getRawButton(2)) {
                 //winchEncoder.reset();
+                latched = "Latched";
                 winding = true;
                 lock_1.set(false);
                 lock_2.set(true);
             }
-            else if (lim_switch.get() == false && winchEncoder.get() < 530 && winding) { //put back to 550 for competition bot!
+            else if (lim_switch.get() == false && winchEncoder.get() < 510 && winding) { //put back to 550 for competition bot!
                 pressed = true;
                 lock_1.set(false);
                 lock_2.set(true);
                 wench.set(.8);
             }
             else if (rightStick.getTrigger()) {
+                latched = "Unlatched";
                 pressed = false;
                 lock_1.set(true);
                 lock_2.set(false);
                 wench.set(rightStick.getAxis(Joystick.AxisType.kY));
             }
-            else if (pressed && winchEncoder.get() >= 533) { //put back to 550 for competition bot!
+            else if (pressed && winchEncoder.get() >= 510) { //put back to 550 for competition bot!
                 lock_1.set(false);
                 lock_2.set(true);
                 winding = false;
