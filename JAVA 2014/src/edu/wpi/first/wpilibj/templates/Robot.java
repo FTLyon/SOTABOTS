@@ -11,6 +11,7 @@ public class Robot extends SimpleRobot {
     Talon      wench                = new Talon(4);
     Compressor compressor           = new Compressor(14,1);
     DigitalInput lim_switch         = new DigitalInput(1);
+    DigitalInput pi                 = new DigitalInput(13);
     Solenoid   intake_1             = new Solenoid(1);
     Solenoid   intake_2             = new Solenoid(2);
     Solenoid   shift_1              = new Solenoid(3);
@@ -27,9 +28,7 @@ public class Robot extends SimpleRobot {
     DigitalOutput mode_5            = new DigitalOutput(12);
     SmartDashboard dash             = new SmartDashboard();
     Timer         time_1            = new Timer();
-    
     DigitalOutput[] modes           = new DigitalOutput[] {mode_1,mode_2,mode_3, mode_4, mode_5};
-    
     boolean    intakeDown           = true;
     int        intake               = 0;
     boolean    shifted              = false;
@@ -81,15 +80,19 @@ public class Robot extends SimpleRobot {
             drive.arcadeDrive(0,0);
             drive_1.reset();
         }
+        if (pi.get()) {
+            Timer.delay(4);
+        }
+        else {
+            
+        }
         while (time_1.get() >= 1.5 && time_1.get() < 2) {
             lock_1.set(true);
             lock_2.set(false);
             drive.arcadeDrive(0,0);
             drive_1.reset();
         }
-        //while (drive_1.get() > -526) {
-          //  drive.arcadeDrive(-1,0);
-        //}
+        
         drive.arcadeDrive(0,0);
             
     }
