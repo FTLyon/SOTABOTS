@@ -80,7 +80,7 @@ public class Robot extends SimpleRobot {
             drive.arcadeDrive(0,0);
             drive_1.reset();
         }
-        if (pi.get()) {
+        if (pi.get()) {    //checks digital signal from raspberry pi
             Timer.delay(4);
         }
         else {
