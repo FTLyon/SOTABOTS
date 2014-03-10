@@ -6,13 +6,18 @@ Error code 224: Could not read String.
 */
 
 package edu.wpi.first.wpilibj.templates;
+
+import java.io.DataInput;
+import java.io.IOException;
 import javax.microedition.io.Connector;
 import javax.microedition.io.SocketConnection;
-import java.io.IOException;
-import java.io.DataInput;
 
+/**
+ *
+ * @author SOTA
+ */
 public class Network {
-    public int Listenbool(){
+    public static int listenBool(){
         //If error occurs returns value -1
         //If no error occurs returns 1(true) or 0(false)
         SocketConnection socket;
@@ -46,7 +51,7 @@ public class Network {
         }
         return seen;
     }
-    public String ListenCoor(){
+    public static String listenCoor(){
         //If error ocurrs returns value "-2,-2"
         //If no error occurs returns "x,y" or "-1,-1" if nothing found
         SocketConnection socket;
