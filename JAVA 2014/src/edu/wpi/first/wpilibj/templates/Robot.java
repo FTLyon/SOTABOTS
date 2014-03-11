@@ -80,9 +80,9 @@ public class Robot extends SimpleRobot {
             drive.arcadeDrive(0,0);
             drive_1.reset();
         }
-        if (pi.get()) {    //checks digital signal from raspberry pi
-            Timer.delay(4);
-        }
+        if (pi.get()) {    //checks digital signal from raspberry pi -- once, not every 4s.
+            Timer.delay(4); //if the goal is not hot (i.e., pi.get() == true) we wait four seconds for the 
+        }                   //     goal to turn hot
         else {
             
         }
