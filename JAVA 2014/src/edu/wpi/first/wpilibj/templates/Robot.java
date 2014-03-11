@@ -172,9 +172,9 @@ public class Robot extends SimpleRobot {
                 intakeDown = true;
             }
             
-            if (leftStick.getRawButton(12)) {
-                System.out.println(Network.NetIn()[0] + " " + drive_1.get());
-            }
+            //if (leftStick.getRawButton(12)) {
+                //System.out.println(Network.NetIn()[0] + " " + drive_1.get());
+            //}
             
             if (leftStick.getTrigger()) {
                 modeIndex ++;
