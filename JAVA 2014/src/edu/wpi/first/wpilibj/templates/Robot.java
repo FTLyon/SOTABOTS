@@ -109,7 +109,7 @@ public class Robot extends SimpleRobot {
             //System.out.println(Network.NetIn());
             //SmartDashboard.putBoolean("LOCK", pressed);
             SmartDashboard.putString("LOCK STATE: ",latched);
-            SmartDashboard.putNumber("WINCHE ENCODER: ", winchEncoder.get());
+            SmartDashboard.putNumber("WINCH ENCODER: ", winchEncoder.get());
             SmartDashboard.putNumber("LED MODE: ", modeIndex);
             
             if (modeIndex == 0) {
@@ -202,7 +202,7 @@ public class Robot extends SimpleRobot {
             }
 
             if (rightStick.getRawButton(2) && lim_switch.get() == true && pressed == false) {
-                wench.set(-.8);
+                wench.set(-1.);
                 winchEncoder.reset();
             }
             else if (lim_switch.get() == false && rightStick.getRawButton(2)) {
