@@ -54,8 +54,10 @@ public class Robot extends SimpleRobot {
     public void autonomous() {
         compressor.start();
         winchEncoder.start();
-        intake_1.set(true); //SWITCH FOR practice BOT!
-        intake_2.set(false);
+        //intake_1.set(true); //Competition
+        //intake_2.set(false);
+        intake_1.set(false); //Practice
+        intake_2.set(true);
         wench.set(0);
         intakeDown = true;
         lock_1.set(false);
@@ -87,7 +89,10 @@ public class Robot extends SimpleRobot {
             
         }
         while (time_1.get() >= 1.5 && time_1.get() < 2) {
-            lock_1.set(true);
+            //I'm assuming this is the trigger system.
+            //lock_1.set(true); // Competition bot
+            //lock_2.set(false);
+            lock_1.set(true); // Practise Bot
             lock_2.set(false);
             drive.arcadeDrive(0,0);
             drive_1.reset();
