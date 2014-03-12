@@ -89,16 +89,8 @@ public class Robot extends SimpleRobot {
             drive.arcadeDrive(0,0);
             drive_1.reset();
         }
-        if (pi.get()) {    //checks digital signal from raspberry pi -- once, not every 4s.
-            Timer.delay(4); //if the goal is not hot (i.e., pi.get() == true) we wait four seconds for the 
-        }                   //     goal to turn hot
-        else {
-            
-        }
         while (time_1.get() >= 1.5 && time_1.get() < 2) {
             //I'm assuming this is the trigger system.
-            //lock_1.set(true); // Competition bot
-            //lock_2.set(false);
             lock_1.set(true); // Practise Bot
             lock_2.set(false);
             drive.arcadeDrive(0,0);
