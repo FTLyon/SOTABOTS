@@ -68,6 +68,13 @@ public class Robot extends SimpleRobot {
         drive_1.start();
         drive.setSafetyEnabled(false);
         drive.arcadeDrive(0,0);
+        String netIn = Network.listenCoor(); //Listens to the Pi.
+        if(!netIn.equals("-2,-2")){
+            SmartDashboard.putString("Detected: ", Network.listenCoor());//If it gets coordinates it displays them.
+        }
+        else{
+            SmartDashboard.putString("Detected: ", "Failure");//If not then it will display failure.
+        }
         while (time_1.get() < 0.5) {
             lock_1.set(false);
             lock_2.set(true);
