@@ -116,75 +116,51 @@ public class Robot extends SimpleRobot {
             SmartDashboard.putString("LOCK STATE: ",latched);
             SmartDashboard.putNumber("WINCH ENCODER: ", winchEncoder.get());
             SmartDashboard.putNumber("LED MODE: ", modeIndex);
-            
-            if (modeIndex == 0) {
-                modes[4].set(false);
-                modes[0].set(true);
-                modes[1].set(false);
-                modes[2].set(false);
-                modes[3].set(false);}
-            else if (modeIndex == 1) {
-                modes[4].set(false);
-                modes[0].set(false);
-                modes[1].set(true);
-                modes[2].set(false);
-                modes[3].set(false);
-            }
-            else if (modeIndex == 2) {
-                modes[4].set(false);
-                modes[0].set(false);
-                modes[1].set(false);
-                modes[2].set(true);
-                modes[3].set(false);
-            }
-            else if (modeIndex ==3) {
-                modes[4].set(false);
-                modes[0].set(false);
-                modes[1].set(false);
-                modes[2].set(false);
-                modes[3].set(true);
-            }
-            else if (modeIndex == 4) {
-                modes[4].set(true);
-                modes[0].set(false);
-                modes[1].set(false);
-                modes[2].set(false);
-                modes[3].set(false);
-            }
-            else if (modeIndex > 4) {
+            //If an improper modeIndex value is given, this will reset to 0.
+            if (modeIndex > 4) {
                 modeIndex = 0;
+            } else {
+                //This will recurse through the modes to determine the current
+                //modeIndex, and set it appropriately.
+                for (int i=0; i<4; i++) {
+                    modes[i].set(false);
+                    modes[modeIndex].set(true);
+                }
             }
-
-            
+            // Left Joystick input assignments.
+            // DriveTrain
             if (Math.abs(leftStick.getAxis(Joystick.AxisType.kX)) > 0.15)   {        
-                drive.arcadeDrive(leftStick);}
+                drive.arcadeDrive(leftStick);
+            }
             else if (Math.abs(leftStick.getAxis(Joystick.AxisType.kY)) > 0.15) {
-                drive.arcadeDrive(leftStick);}
+                drive.arcadeDrive(leftStick);
+            }
             else{
-                drive.arcadeDrive(0,0);}
-            
-                                   
-/*left*/    if (leftStick.getRawButton(3)) {
+                drive.arcadeDrive(0,0);
+            }
+            // Supershifter state
+            if (leftStick.getRawButton(3)) {
                 shifted = true;}
             else if (leftStick.getRawButton(4)) {
                 shifted = false;}
-            
-            
+            // Intake arm state
             else if (leftStick.getRawButton(5)) {
-                intakeDown = false;
+                intakeDown = false; // up
             }
             else if (leftStick.getRawButton(6)){
-                intakeDown = true;
+                intakeDown = true; // down
             }
-            
+            // Print line to print something from the network to the
+            // driveStation. Avery
             //if (leftStick.getRawButton(12)) {
                 //System.out.println(Network.NetIn()[0] + " " + drive_1.get());
             //}
-            
+            // Cycle the modeindex for the LED controls.
             if (leftStick.getTrigger()) {
-                modeIndex ++;
+                modeIndex ++; // Add to modeIndex by '1'
             }
-            
+            // Hard set the modeIndex
+            // This was requested for easy Alliance color setting.
             if(leftStick.getRawButton(7)) {
                 modeIndex = 1;
             }
@@ -192,43 +168,49 @@ public class Robot extends SimpleRobot {
                 modeIndex = 2;
             }
             
-/*auto vision*/            
+            // AutoVision INCOMPLETE
             if (leftStick.getRawButton(9) && leftStick.getRawButton(10)) {
                 //target code here, pull from Vision class
             }
             
-/*right*/   if (rightStick.getRawButton(3)) {
-                intake = 1;
+            // Right Joystick input assignments.
+            // This controls the ball intake motor on the arm.
+            if (rightStick.getRawButton(3)) {
+                intake = 1; // Intake
             }
             else if (rightStick.getRawButton(4)) {
-                intake = 2;
+                intake = 2; // Expell
             } else {
-                intake = 0;
+                intake = 0; // Default (no Run)
             }
-
+            // Winch in, latch and auto-unwinch
+            // Should probably have a step by step commenting for this. Frankie
             if (rightStick.getRawButton(2) && lim_switch.get() == true && pressed == false) {
                 wench.set(-1.);
                 winchEncoder.reset();
             }
             else if (lim_switch.get() == false && rightStick.getRawButton(2)) {
-                //winchEncoder.reset();
-                latched = "Latched";
+                //winchEncoder.reset(); <-- Is this needed? If not, remove it.
                 winding = true;
                 lock_1.set(false);
                 lock_2.set(true);
+                latched = "Latched";
             }
+            // This is set differently between practice and competition bots
+            // because the nylon stop length is (and will be) different.
             else if (lim_switch.get() == false && winchEncoder.get() < 510 && winding) { //put back to 550 for competition bot!
                 pressed = true;
                 lock_1.set(false);
                 lock_2.set(true);
                 wench.set(.8);
             }
+            // Unlatch AKA: Shoot
             else if (rightStick.getTrigger()) {
-                latched = "Unlatched";
                 pressed = false;
                 lock_1.set(true);
                 lock_2.set(false);
                 wench.set(rightStick.getAxis(Joystick.AxisType.kY));
+                latched = "Unlatched";
             }
             else if (pressed && winchEncoder.get() >= 510) { //put back to 550 for competition bot!
                 lock_1.set(false);
@@ -270,32 +252,25 @@ public class Robot extends SimpleRobot {
             Timer.delay(.01);
             
         }
-    }
-    
-    private void SetIntakeMotor(int status)
-    {
-        /* 0 = stop */
-        /* 1 = forward */
-        /* 2 = backward */
-        
+    }    
+
+    private void SetIntakeMotor(int status) {
+        // Sets motion on the Intake motor on the arm.
         if(status == 0)
         {
-            intakeMotor.stopMotor();
-        } 
-        
+            intakeMotor.stopMotor(); // Stop
+        }
         else if(status == 1)
         {
-            intakeMotor.set(1);
-        } 
-        
+            intakeMotor.set(1); // Forward
+        }
         else if(status == 2)
         {
-            intakeMotor.set(-1);
+            intakeMotor.set(-1); // Reverse
         }
     }
     
     public void test() {
-    
+        
     }
-    
 }
