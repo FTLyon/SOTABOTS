@@ -70,7 +70,7 @@ public class Robot extends SimpleRobot {
         drive.arcadeDrive(0,0);
         String netIn = Network.listenCoor(); //Listens to the Pi.
         if(!netIn.equals("-2,-2")){
-            SmartDashboard.putString("Detected: ", Network.listenCoor());//If it gets coordinates it displays them.
+            SmartDashboard.putString("Detected: ", netIn);//If it gets coordinates it displays them.
         }
         else{
             SmartDashboard.putString("Detected: ", "Failure");//If not then it will display failure.
