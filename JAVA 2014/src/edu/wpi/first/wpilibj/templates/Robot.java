@@ -71,6 +71,13 @@ public class Robot extends SimpleRobot {
             lock_2.set(true);
             drive.arcadeDrive(0,0);
         }
+        String netIn = Network.listenCoor();
+        if(!netIn.equals("-2,-2")){
+            SmartDashboard.putString("Detected: ", netIn);
+        }
+        else{
+            SmartDashboard.putString("Detected: ", "Failed.");
+        }
         while (drive_1.get() > -3400) {
             drive.arcadeDrive(-.8,0);
             System.out.println(drive_1.get());
@@ -164,10 +171,6 @@ public class Robot extends SimpleRobot {
             }
             else if (leftStick.getRawButton(6)){
                 intakeDown = true;
-            }
-            
-            if (leftStick.getRawButton(12)) {
-                System.out.println(Network.NetIn()[0] + " " + drive_1.get());
             }
             
             if (leftStick.getTrigger()) {
