@@ -54,10 +54,8 @@ public class Robot extends SimpleRobot {
     public void autonomous() {
         compressor.start();
         winchEncoder.start();
-        //intake_1.set(true); //Competition
-        //intake_2.set(false);
-        intake_1.set(false); //Practice
-        intake_2.set(true);
+        intake_1.set(true); //SWITCH FOR practice BOT!
+        intake_2.set(false);
         wench.set(0);
         intakeDown = true;
         lock_1.set(false);
@@ -68,30 +66,22 @@ public class Robot extends SimpleRobot {
         drive_1.start();
         drive.setSafetyEnabled(false);
         drive.arcadeDrive(0,0);
-        String netIn = Network.listenCoor(); //Listens to the Pi.
-        if(!netIn.equals("-2,-2")){
-            SmartDashboard.putString("Detected: ", netIn);//If it gets coordinates it displays them.
-        }
-        else{
-            SmartDashboard.putString("Detected: ", "Failure");//If not then it will display failure.
-        }
         while (time_1.get() < 0.5) {
             lock_1.set(false);
             lock_2.set(true);
             drive.arcadeDrive(0,0);
         }
-        while (drive_1.get() > -3250) {
-            drive.arcadeDrive(-1,0);
+        while (drive_1.get() > -3400) {
+            drive.arcadeDrive(-.8,0);
             System.out.println(drive_1.get());
             time_1.reset();
         }
-        while (time_1.get() < 1.5) {
+        while (time_1.get() < 1.8) {
             drive.arcadeDrive(0,0);
             drive_1.reset();
         }
-        while (time_1.get() >= 1.5 && time_1.get() < 2) {
-            //I'm assuming this is the trigger system.
-            lock_1.set(true); // Practise Bot
+        while (time_1.get() >= 1.8 && time_1.get() < 2) {
+            lock_1.set(true);
             lock_2.set(false);
             drive.arcadeDrive(0,0);
             drive_1.reset();
@@ -113,53 +103,77 @@ public class Robot extends SimpleRobot {
             //System.out.println(Network.NetIn());
             //SmartDashboard.putBoolean("LOCK", pressed);
             SmartDashboard.putString("LOCK STATE: ",latched);
-            SmartDashboard.putNumber("WINCH ENCODER: ", winchEncoder.get());
+            SmartDashboard.putNumber("WINCHE ENCODER: ", winchEncoder.get());
             SmartDashboard.putNumber("LED MODE: ", modeIndex);
-            //If an improper modeIndex value is given, this will reset to 0.
-            if (modeIndex > 4) {
+            
+            if (modeIndex == 0) {
+                modes[4].set(false);
+                modes[0].set(true);
+                modes[1].set(false);
+                modes[2].set(false);
+                modes[3].set(false);}
+            else if (modeIndex == 1) {
+                modes[4].set(false);
+                modes[0].set(false);
+                modes[1].set(true);
+                modes[2].set(false);
+                modes[3].set(false);
+            }
+            else if (modeIndex == 2) {
+                modes[4].set(false);
+                modes[0].set(false);
+                modes[1].set(false);
+                modes[2].set(true);
+                modes[3].set(false);
+            }
+            else if (modeIndex ==3) {
+                modes[4].set(false);
+                modes[0].set(false);
+                modes[1].set(false);
+                modes[2].set(false);
+                modes[3].set(true);
+            }
+            else if (modeIndex == 4) {
+                modes[4].set(true);
+                modes[0].set(false);
+                modes[1].set(false);
+                modes[2].set(false);
+                modes[3].set(false);
+            }
+            else if (modeIndex > 4) {
                 modeIndex = 0;
-            } else {
-                //This will recurse through the modes to determine the current
-                //modeIndex, and set it appropriately.
-                for (int i=0; i<4; i++) {
-                    modes[i].set(false);
-                    modes[modeIndex].set(true);
-                }
             }
-            // Left Joystick input assignments.
-            // DriveTrain
+
+            
             if (Math.abs(leftStick.getAxis(Joystick.AxisType.kX)) > 0.15)   {        
-                drive.arcadeDrive(leftStick);
-            }
+                drive.arcadeDrive(leftStick);}
             else if (Math.abs(leftStick.getAxis(Joystick.AxisType.kY)) > 0.15) {
-                drive.arcadeDrive(leftStick);
-            }
+                drive.arcadeDrive(leftStick);}
             else{
-                drive.arcadeDrive(0,0);
-            }
-            // Supershifter state
-            if (leftStick.getRawButton(3)) {
+                drive.arcadeDrive(0,0);}
+            
+                                   
+/*left*/    if (leftStick.getRawButton(3)) {
                 shifted = true;}
             else if (leftStick.getRawButton(4)) {
                 shifted = false;}
-            // Intake arm state
+            
+            
             else if (leftStick.getRawButton(5)) {
-                intakeDown = false; // up
+                intakeDown = false;
             }
             else if (leftStick.getRawButton(6)){
-                intakeDown = true; // down
+                intakeDown = true;
             }
-            // Print line to print something from the network to the
-            // driveStation. Avery
-            //if (leftStick.getRawButton(12)) {
-                //System.out.println(Network.NetIn()[0] + " " + drive_1.get());
-            //}
-            // Cycle the modeindex for the LED controls.
+            
+            if (leftStick.getRawButton(12)) {
+                System.out.println(Network.NetIn()[0] + " " + drive_1.get());
+            }
+            
             if (leftStick.getTrigger()) {
-                modeIndex ++; // Add to modeIndex by '1'
+                modeIndex ++;
             }
-            // Hard set the modeIndex
-            // This was requested for easy Alliance color setting.
+            
             if(leftStick.getRawButton(7)) {
                 modeIndex = 1;
             }
@@ -167,51 +181,46 @@ public class Robot extends SimpleRobot {
                 modeIndex = 2;
             }
             
-            // AutoVision INCOMPLETE
+/*auto vision*/            
             if (leftStick.getRawButton(9) && leftStick.getRawButton(10)) {
                 //target code here, pull from Vision class
             }
             
-            // Right Joystick input assignments.
-            // This controls the ball intake motor on the arm.
-            if (rightStick.getRawButton(3)) {
-                intake = 1; // Intake
+/*right*/   if (rightStick.getRawButton(3)) {
+                intake = 1;
             }
             else if (rightStick.getRawButton(4)) {
-                intake = 2; // Expell
+                intake = 2;
             } else {
-                intake = 0; // Default (no Run)
+                intake = 0;
             }
-            // Winch in, latch and auto-unwinch
-            // Should probably have a step by step commenting for this. Frankie
+
             if (rightStick.getRawButton(2) && lim_switch.get() == true && pressed == false) {
-                wench.set(-1.);
+                wench.set(-.8);
                 winchEncoder.reset();
             }
             else if (lim_switch.get() == false && rightStick.getRawButton(2)) {
-                //winchEncoder.reset(); <-- Is this needed? If not, remove it.
+                //winchEncoder.reset();
+                latched = "Latched";
                 winding = true;
                 lock_1.set(false);
                 lock_2.set(true);
-                latched = "Latched";
             }
-            // This is set differently between practice and competition bots
-            // because the nylon stop length is (and will be) different.
-            else if (lim_switch.get() == false && winchEncoder.get() < 510 && winding) { //put back to 550 for competition bot!
+            else if (lim_switch.get() == false && winchEncoder.get() < 560 && winding) { //put back to 550 for competition bot!
                 pressed = true;
                 lock_1.set(false);
                 lock_2.set(true);
                 wench.set(.8);
             }
-            // Unlatch AKA: Shoot
             else if (rightStick.getTrigger()) {
+                latched = "Unlatched";
                 pressed = false;
                 lock_1.set(true);
                 lock_2.set(false);
+                wench.stopMotor();
                 wench.set(rightStick.getAxis(Joystick.AxisType.kY));
-                latched = "Unlatched";
             }
-            else if (pressed && winchEncoder.get() >= 510) { //put back to 550 for competition bot!
+            else if (pressed && winchEncoder.get() >= 560) { //put back to 550 for competition bot!
                 lock_1.set(false);
                 lock_2.set(true);
                 winding = false;
@@ -251,25 +260,32 @@ public class Robot extends SimpleRobot {
             Timer.delay(.01);
             
         }
-    }    
-
-    private void SetIntakeMotor(int status) {
-        // Sets motion on the Intake motor on the arm.
+    }
+    
+    private void SetIntakeMotor(int status)
+    {
+        /* 0 = stop */
+        /* 1 = forward */
+        /* 2 = backward */
+        
         if(status == 0)
         {
-            intakeMotor.stopMotor(); // Stop
-        }
+            intakeMotor.stopMotor();
+        } 
+        
         else if(status == 1)
         {
-            intakeMotor.set(1); // Forward
-        }
+            intakeMotor.set(1);
+        } 
+        
         else if(status == 2)
         {
-            intakeMotor.set(-1); // Reverse
+            intakeMotor.set(-1);
         }
     }
     
     public void test() {
-        
+    
     }
+    
 }
