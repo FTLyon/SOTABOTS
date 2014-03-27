@@ -5,7 +5,7 @@ from time import sleep
 
 inputs = ['Match','Auto Hot','Auto High','Auto Low','Auto Zone','Tele Pass','Tele Score','Tele Truss']
 
-def init(name):
+def initExcel(name):
 	file = name + '.xls'
 	try:
 		w = copy(open_workbook(file))
@@ -24,7 +24,7 @@ def write(name,match,data):
 	try:
 		w = copy(open_workbook(file))
 	except:
-		init(name)
+		initExcel(name)
 		w = copy(open_workbook(file))
 	row = match
 	col = 1
@@ -34,7 +34,7 @@ def write(name,match,data):
 	w.save(file)
 	print("Data written to " + file)
 
-#init("2557")
+#initExcel("2557")
 #write(1,(1,3,5,13,26))
 print("Yep")
 sleep(2)
